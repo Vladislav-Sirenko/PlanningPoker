@@ -1,0 +1,10 @@
+ul {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+div {
+    padding-top: 2%;
+    padding-left: 30px;
+}

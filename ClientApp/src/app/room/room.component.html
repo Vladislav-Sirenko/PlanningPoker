@@ -1,0 +1,21 @@
+<ul>
+  <div *ngFor="let card of cards">
+    <app-card [value]="card.value"></app-card>
+  </div>
+</ul>
+<p *ngIf="!users"><em>Loading...</em></p>
+
+<table class='table' *ngIf="users">
+  <thead>
+    <tr>
+      <th>Active users</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let user of users">
+      <td>{{user}}</td>
+    </tr>
+  </tbody>
+</table>
+
+

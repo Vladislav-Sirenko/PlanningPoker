@@ -1,0 +1,12 @@
+.header {
+    float: left;
+}
+
+.footer {
+float: right;
+}
+
+div {
+    position: relative;    
+    background-color: ghostwhite;
+}
