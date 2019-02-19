@@ -12,13 +12,13 @@ import { HttpClient } from '@angular/common/http';
 export class RoomComponent {
   cards = Cards;
 
-  public users: User[] = [];
+  public users: string[] = [];
 
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
     http.get<User[]>(baseUrl + 'api/Users/GetUsers').subscribe(result => {
       for (const user in result) {
         if (user) {
-          this.users.push(result[user]);
+          this.users.push(user);
         }
       }
       console.log(this.users);
