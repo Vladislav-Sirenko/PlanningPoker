@@ -20,12 +20,11 @@ export class DashboardComponent implements OnInit {
 
   addUser() {
     this.user = new User(this.userName, this.userPassword);
-    this.userService.addUser(this._baseUrl, this.user);
+    this.userService.addUser(this.user);
     this.onChanged.emit(this.user.Name);
   }
 
-  constructor(private userService: UserService, @Inject('BASE_URL') baseUrl: string) {
-    this._baseUrl = baseUrl;
+  constructor(private userService: UserService) {
   }
 
   ngOnInit() {

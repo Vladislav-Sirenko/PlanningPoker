@@ -14,14 +14,7 @@ export class RoomComponent {
 
   public users: string[] = [];
 
-  constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-    http.get<User[]>(baseUrl + 'api/Users/GetUsers').subscribe(result => {
-      for (const user in result) {
-        if (user) {
-          this.users.push(user);
-        }
-      }
-      console.log(this.users);
-    }, error => console.error(error));
+  constructor(private userService: UserService) {
+    this.users = userService.getUsers();
   }
 }
