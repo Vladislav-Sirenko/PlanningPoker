@@ -24,6 +24,7 @@ namespace PlanningPoker
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSingleton<IUserService, UserService>();
             // In production, the Angular files will be served from this directory
+            services.AddSignalR();
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/dist";
@@ -46,6 +47,10 @@ namespace PlanningPoker
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<LoopyHub>("/loopy");
+            });
 
             app.UseMvc(routes =>
             {

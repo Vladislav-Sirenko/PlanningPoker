@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, Input } from '@angular/core';
 import { Cards } from '../cardMock';
 import { UserService } from '../user.service';
 import { User } from '../user.model';
