@@ -1,18 +1,18 @@
-<div class="container-fluid">
+<!-- <div class="container-fluid"> -->
  
-  <h1>Send some basic messages</h1>
+  <h3>Send some basic messages</h3>
 
 
-  <div class="row" >
+  <!-- <div class="row" > -->
       <form class="form-inline" (ngSubmit)="sendMessage()" #messageForm="ngForm">
           <div class="form-group">
               <label class="sr-only" for="message">Message</label>
               <input type="text" class="form-control" id="message" placeholder="your message..." name="message" [(ngModel)]="message" required>
           </div>
-          <button type="submit" class="btn btn-primary" [disabled]="!messageForm.valid">Send Message</button>
+          <button type="submit" class="btn btn-primary mt-2" [disabled]="!messageForm.valid">Send Message</button>
       </form>
-  </div>
-  <div class="row" *ngIf="messages.length > 0"  >
+  <!-- </div> -->
+  <div  *ngIf="messages.length > 0"  >
       <div class="table-responsive">
           <table class="table table-striped">
               <thead>
@@ -30,7 +30,7 @@
           </table>
       </div>
   </div>
-  <div class="row" *ngIf="messages.length <= 0">
+  <div  *ngIf="messages.length <= 0">
       <span>No messages</span>
   </div>
-</div>
+<!-- </div> -->
