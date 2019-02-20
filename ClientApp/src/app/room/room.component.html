@@ -1,22 +1,33 @@
+
+<app-message [userName]="userName" id = "message"></app-message>
+<div style="float:right;">
+<table class='table' *ngIf="users" style="float:right;width:500px; text-align: center">
+  <tr>
+    <th style="text-align:inherit">Active users</th>
+  </tr>
+<tbody>
+  <tr *ngFor="let user of users">
+    <td>{{user}}</td>
+  </tr>
+</tbody>
+</table>
+</div>
+<div style="width:800px; margin:0 auto;">
 <ul>
-  <div *ngFor="let card of cards">
-    <app-card [value]="card.value"></app-card>
+  
+  <div *ngFor="let card of cards; let idx = index">
+    <app-card *ngIf="idx < 3" [value]="card.value"  style="float: left;"></app-card>
   </div>
 </ul>
-<app-message></app-message>
-<p *ngIf="!users"><em>Loading...</em></p>
-
-<table class='table' *ngIf="users">
-  <thead>
-    <tr>
-      <th>Active users</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let user of users">
-      <td>{{user}}</td>
-    </tr>
-  </tbody>
-</table>
-
+<ul >
+  <div *ngFor="let card of cards; let idx = index" style="float: left;">
+    <app-card *ngIf="idx >= 3 && idx <=5 " [value]="card.value"></app-card>
+  </div>
+</ul>
+<ul >
+  <div *ngFor="let card of cards; let idx = index" style="float: left;">
+    <app-card *ngIf="idx >= 6 && idx <=8 " [value]="card.value"></app-card>
+  </div>
+</ul>
+</div>
 

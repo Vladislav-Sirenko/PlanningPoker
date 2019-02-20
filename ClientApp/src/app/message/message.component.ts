@@ -11,20 +11,19 @@ export class MessageComponent implements OnInit {
 
   private _hubConnection: HubConnection | undefined;
   public async: any;
-  @Input() userName: string;
   message = '';
   messages: string[] = [];
+  @Input() userName: string;
 
   constructor() {
   }
 
   public sendMessage(): void {
-    const data = `Sent: ${this.message}`;
+    const data = `${this.userName}: ${this.message}`;
 
     if (this._hubConnection) {
       this._hubConnection.invoke('Send', data);
     }
-    this.messages.push(data);
   }
 
   ngOnInit() {
@@ -36,7 +35,7 @@ export class MessageComponent implements OnInit {
     this._hubConnection.start().then(() => console.error('Error'));
 
     this._hubConnection.on('Send', (data: string) => {
-      const received = `Received: ${data.replace('Sent:', '')}`;
+      const received = `${data}`;
       this.messages.push(received);
     });
   }

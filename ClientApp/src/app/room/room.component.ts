@@ -10,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./room.component.css']
 })
 export class RoomComponent {
+  @Input() userName: string;
   cards = Cards;
 
   public users: string[] = [];
