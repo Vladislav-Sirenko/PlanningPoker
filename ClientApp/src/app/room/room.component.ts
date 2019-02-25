@@ -1,8 +1,6 @@
 import { Component, OnInit, Inject, Input } from '@angular/core';
 import { Cards } from '../cardMock';
 import { UserService } from '../user.service';
-import { User } from '../user.model';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-room',

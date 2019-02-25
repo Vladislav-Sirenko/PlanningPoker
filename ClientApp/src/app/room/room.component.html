@@ -6,20 +6,19 @@
 
 
     <div class="col-md-5 m-2 ">
-        <!-- <ul> -->
           <div *ngFor="let card of cards; let idx = index">
-            <app-card [value]="card.value" style="float: left"></app-card>
+            <app-card [value]="card.value" id="message"></app-card>
           </div>
     </div>
 
-      <div class="col m-2 border" style="height:100px auto ;">
-        <table class="table" style="text-align:center" *ngIf="users">
+      <div class="col m-2 border" id="messagebox">
+        <table class="table" *ngIf="users">
           <tr>
-            <th style="text-align:inherit">Active users</th>
+            <th>Active users</th>
           </tr>
           <tbody >
             <tr *ngFor="let user of users">
-              <td class="text-primary" style="cursor: pointer;">{{user}}</td>
+              <td class="text-primary" id="user">{{user}}</td>
             </tr>
           </tbody>
         </table>

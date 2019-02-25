@@ -1,9 +1,5 @@
-<!-- <div class="container-fluid"> -->
- 
+
   <h3>Send some basic messages</h3>
-
-
-  <!-- <div class="row" > -->
       <form class="form-inline" (ngSubmit)="sendMessage()" #messageForm="ngForm">
           <div class="form-group">
               <label class="sr-only" for="message">Message</label>
@@ -11,7 +7,6 @@
           </div>
           <button type="submit" class="btn btn-primary mt-2" [disabled]="!messageForm.valid">Send Message</button>
       </form>
-  <!-- </div> -->
   <div  *ngIf="messages.length > 0"  >
       <div class="table-responsive">
           <table class="table table-striped">
@@ -33,4 +28,3 @@
   <div  *ngIf="messages.length <= 0">
       <span>No messages</span>
   </div>
-<!-- </div> -->

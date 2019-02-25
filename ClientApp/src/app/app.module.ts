@@ -5,8 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { CardComponent } from './card/card.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HeaderComponent } from './header/header.component';
@@ -17,8 +15,6 @@ import { MessageComponent } from './message/message.component';
 @NgModule({
   declarations: [
     AppComponent,
-    CounterComponent,
-    FetchDataComponent,
     CardComponent,
     DashboardComponent,
     HeaderComponent,

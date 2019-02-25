@@ -10,7 +10,6 @@ import * as signalR from '@aspnet/signalr';
 export class MessageComponent implements OnInit {
 
   private _hubConnection: HubConnection | undefined;
-  public async: any;
   message = '';
   messages: string[] = [];
   @Input() userName: string;
