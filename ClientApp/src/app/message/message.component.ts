@@ -31,10 +31,22 @@ export class MessageComponent implements OnInit {
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
-    this._hubConnection.start().then(() => console.error('Error'));
+    this._hubConnection.start().then(() => { });
 
+    this._hubConnection.on('Connect', (data: string) => {
+      const received = `${data} connected`;
+      this.messages.push(received);
+    });
+    this._hubConnection.on('Vote', (data: string) => {
+      const received = `${data}`;
+      this.messages.push(received);
+    });
     this._hubConnection.on('Send', (data: string) => {
       const received = `${data}`;
+      this.messages.push(received);
+    });
+    this._hubConnection.on('Disconnect', (name: string) => {
+      const received = `${name} disconnected`;
       this.messages.push(received);
     });
   }
