@@ -10,5 +10,9 @@ namespace PlanningPoker.Services
     {
         User AddUser(User user);
         Dictionary<string, string> GetUsers();
+        void AddVote(UserVote userVote);
+        Dictionary<string, int> GetVotes();
+        void ResetVote();
+        void DeleteUser(string item);
     }
 }

@@ -31,5 +31,31 @@ namespace PlanningPoker.Controllers
             _userService.AddUser(user);
             return user;
         }
+        [HttpGet("[action]")]
+        public Dictionary<string, int> GetVotes()
+        {
+            var usersVotes = _userService.GetVotes();
+            return usersVotes;
+        }
+
+        [HttpPost("[action]")]
+        public void Vote([FromBody] UserVote userVote)
+        {
+            _userService.AddVote(userVote);
+
+        }
+
+        [HttpPost("[action]")]
+        public void ResetVotes()
+        {
+            _userService.ResetVote();
+
+        }
+
+        [HttpPost("[action]")]
+        public void DeleteUser([FromBody] string user)
+        {
+            _userService.DeleteUser(user);
+        }
     }
 }
