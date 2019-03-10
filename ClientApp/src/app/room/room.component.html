@@ -16,7 +16,7 @@
     </div>
 
     <div class="col-3  border" id="messagebox">
-        <button (click)="getVotes()" class="btn btn-primary mt-2">Finish Voting</button>
+        <button [disabled] = "buttonDisabled()" (click)="getVotes()" class="btn btn-primary mt-2">Finish Voting</button>
         <button (click)="resetVotes()" class="btn btn-primary mt-2">Reset Votes</button>
       <div class="row border bg-primary">
         <div class="col">

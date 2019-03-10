@@ -50,8 +50,8 @@ namespace PlanningPoker
             Log.Information("Trying to delete user");
             var name = _userService.GetUserByConnection(Context.ConnectionId);
             Log.Information("User disconnected with connection name:" + name);
-            _userService.DeleteUser(name);
-            return Clients.All.SendAsync("Disconnect", name);           
+            _userService.DeleteUser(data);
+            return Clients.All.SendAsync("Disconnect", data);           
         }
 
     }

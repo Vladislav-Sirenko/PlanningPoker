@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PlanningPoker.Models;
 using Serilog;
 
@@ -31,14 +32,14 @@ namespace PlanningPoker.Services
             _usersVotes.Add(userVote.UserName, userVote.Vote);
 
         }
-        public Dictionary<string, int> GetVotes()
+        public IOrderedEnumerable<KeyValuePair<string, int>> GetVotes()
         {
-            return _usersVotes;
+            return _usersVotes.OrderBy(key => key.Key);
         }
 
-        public Dictionary<string, string> GetUsers()
+        public IOrderedEnumerable<KeyValuePair<string, string>> GetUsers()
         {
-            return _users;
+            return _users.OrderBy(key=>key.Key);
         }
 
         public void ResetVote() => _usersVotes.Clear();
