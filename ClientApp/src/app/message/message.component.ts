@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HubConnection } from '@aspnet/signalr';
 import * as signalR from '@aspnet/signalr';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-message',
@@ -9,45 +10,37 @@ import * as signalR from '@aspnet/signalr';
 })
 export class MessageComponent implements OnInit {
 
-  private _hubConnection: HubConnection | undefined;
   message = '';
   messages: string[] = [];
   @Input() userName: string;
 
-  constructor() {
+  constructor(private userService: UserService) {
   }
 
   public sendMessage(): void {
     const data = `${this.userName}: ${this.message}`;
 
-    if (this._hubConnection) {
-      this._hubConnection.invoke('Send', data);
-    }
+    this.userService.sendMessage(data);
   }
 
   ngOnInit() {
-    this._hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:5001/loopy')
-      .configureLogging(signalR.LogLevel.Information)
-      .build();
 
-    this._hubConnection.start().then(() => { });
+    this.userService.changed.subscribe((name) => {
+    const received = `${name} connected`;
+    this.messages.push(received);
+    });
+    this.userService.voted.subscribe((name) => {
+      const received = `${name}`;
+      this.messages.push(received);
+      });
 
-    this._hubConnection.on('Connect', (data: string) => {
-      const received = `${data} connected`;
-      this.messages.push(received);
-    });
-    this._hubConnection.on('Vote', (data: string) => {
-      const received = `${data}`;
-      this.messages.push(received);
-    });
-    this._hubConnection.on('Send', (data: string) => {
-      const received = `${data}`;
-      this.messages.push(received);
-    });
-    this._hubConnection.on('Disconnect', (name: string) => {
-      const received = `${name} disconnected`;
-      this.messages.push(received);
-    });
+      this.userService.send.subscribe((data) => {
+        const received = `${data}`;
+        this.messages.push(received);
+        });
+        this.userService.disconnected.subscribe((data) => {
+          const received = `${data} disconnected`;
+          this.messages.push(received);
+          });
   }
 }

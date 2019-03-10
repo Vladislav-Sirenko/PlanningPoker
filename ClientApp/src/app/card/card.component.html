@@ -1,8 +1,10 @@
-<div (click) = "sendMessage()" class="card border-success mb-3" id="card">
+
+<div (click) = "sendMessage()" [ngClass]="getHeaderClass()" id="card">
   <div class="card-header bg-transparent border-success"><span class="header">{{value}}</span></div>
-  <div class="card-body">
+  <div [ngClass]="getBodyClass()">
     <h1>{{value}}</h1>
   </div>
   <div class="card-footer bg-transparent border-success"><span class="footer">{{value}}</span></div>
-</div> 
+</div>
+
 

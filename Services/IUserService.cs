@@ -14,5 +14,7 @@ namespace PlanningPoker.Services
         Dictionary<string, int> GetVotes();
         void ResetVote();
         void DeleteUser(string item);
+        void AddUserConnection(string id, string name);
+        string GetUserByConnection(string id);
     }
 }

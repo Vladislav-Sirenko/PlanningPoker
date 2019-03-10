@@ -17,7 +17,7 @@ namespace PlanningPoker.Controllers
         {
             _userService = userService;
         }
-
+        
         [HttpGet("[action]")]
         public Dictionary<string, string> GetUsers()
         {
@@ -32,10 +32,10 @@ namespace PlanningPoker.Controllers
             return user;
         }
         [HttpGet("[action]")]
-        public Dictionary<string, int> GetVotes()
+        public JsonResult GetVotes()
         {
             var usersVotes = _userService.GetVotes();
-            return usersVotes;
+            return Json(usersVotes);
         }
 
         [HttpPost("[action]")]
