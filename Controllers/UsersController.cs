@@ -21,7 +21,7 @@ namespace PlanningPoker.Controllers
         [HttpGet("[action]")]
         public Dictionary<string, string> GetUsers()
         {
-            Dictionary<string,string> users = _userService.GetUsers().ToDictionary(key => key.Key,value=>value.Value);
+            Dictionary<string,string> users = _userService.GetUsers();
             return users;
         }
 
@@ -34,7 +34,7 @@ namespace PlanningPoker.Controllers
         [HttpGet("[action]")]
         public Dictionary<string, int> GetVotes()
         {
-            Dictionary<string, int> usersVotes = _userService.GetVotes().ToDictionary(key => key.Key, value => value.Value);
+            Dictionary<string, int> usersVotes = _userService.GetVotes();
             return usersVotes;
         }
 

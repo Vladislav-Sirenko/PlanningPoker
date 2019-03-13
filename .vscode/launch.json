@@ -10,7 +10,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/bin/Debug/netcoreapp2.1/PlanningPoker.dll",
+            "program": "${workspaceFolder}/bin/Debug/netcoreapp2.1/netcoreapp2.1/PlanningPoker.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,

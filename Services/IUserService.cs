@@ -9,9 +9,9 @@ namespace PlanningPoker.Services
     public interface IUserService
     {
         User AddUser(User user);
-        IOrderedEnumerable<KeyValuePair<string, string>> GetUsers();
+        Dictionary<string, string> GetUsers();
         void AddVote(UserVote userVote);
-        IOrderedEnumerable<KeyValuePair<string, int>> GetVotes();
+        Dictionary<string, int> GetVotes();
         void ResetVote();
         void DeleteUser(string item);
         void AddUserConnection(string id, string name);

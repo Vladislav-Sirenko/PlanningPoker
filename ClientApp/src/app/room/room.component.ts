@@ -33,7 +33,8 @@ export class RoomComponent implements OnInit {
           this.userVote = [];
           for (const user in result) {
             if (user) {
-              this.userVote.push(result[user]);
+              const index = this.users.indexOf(user);
+              this.userVote[index] = result[user];
             }
           }
         }, error => console.error(error));
@@ -67,8 +68,10 @@ export class RoomComponent implements OnInit {
         });
     this.userService.disconnected
       .subscribe(
-        () => {
+        (name) => {
           this.userService.getUsers().subscribe(users => {
+            this.userVote[this.users.indexOf(name)] = null;
+            this.Votes[this.users.indexOf(name)] = null;
             this.users = [];
             // tslint:disable-next-line:forin
             for (const user in users) {

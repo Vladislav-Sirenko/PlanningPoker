@@ -65,6 +65,7 @@ export class UserService {
   }
   deleteUser(user: string) {
     localStorage.removeItem('UserName');
+    localStorage.removeItem('UserVote');
     if (this._hubConnection) {
       this._hubConnection.invoke('Disconnect', user);
     }

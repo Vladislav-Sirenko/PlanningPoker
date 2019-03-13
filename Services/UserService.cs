@@ -32,14 +32,14 @@ namespace PlanningPoker.Services
             _usersVotes.Add(userVote.UserName, userVote.Vote);
 
         }
-        public IOrderedEnumerable<KeyValuePair<string, int>> GetVotes()
+        public Dictionary<string, int> GetVotes()
         {
-            return _usersVotes.OrderBy(key => key.Key);
+            return _usersVotes;
         }
 
-        public IOrderedEnumerable<KeyValuePair<string, string>> GetUsers()
+        public Dictionary<string, string> GetUsers()
         {
-            return _users.OrderBy(key=>key.Key);
+            return _users;
         }
 
         public void ResetVote() => _usersVotes.Clear();
