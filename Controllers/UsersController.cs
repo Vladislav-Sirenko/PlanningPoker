@@ -17,11 +17,11 @@ namespace PlanningPoker.Controllers
         {
             _userService = userService;
         }
-
+        
         [HttpGet("[action]")]
         public Dictionary<string, string> GetUsers()
         {
-            var users = _userService.GetUsers();
+            Dictionary<string,string> users = _userService.GetUsers();
             return users;
         }
 
@@ -34,7 +34,7 @@ namespace PlanningPoker.Controllers
         [HttpGet("[action]")]
         public Dictionary<string, int> GetVotes()
         {
-            var usersVotes = _userService.GetVotes();
+            Dictionary<string, int> usersVotes = _userService.GetVotes();
             return usersVotes;
         }
 
