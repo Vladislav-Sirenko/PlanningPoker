@@ -1,10 +1,11 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { User } from './user.model';
 import * as signalR from '@aspnet/signalr';
 import { Subject } from 'rxjs/Subject';
 import { UserVote } from './userVote.model';
 import { Observable } from 'rxjs/Observable';
+import { Room } from './rooms/room.model';
 @Injectable()
 export class UserService {
 
@@ -56,7 +57,6 @@ export class UserService {
 
 
   addUser(user: User) {
-    this.http.post(this._baseUrl + 'api/Users/AddUser', user).subscribe();
     localStorage.setItem('UserName', user.Name);
     const data = `${user.Name}`;
     if (this._hubConnection) {
@@ -70,8 +70,9 @@ export class UserService {
       this._hubConnection.invoke('Disconnect', user);
     }
   }
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this._baseUrl + 'api/Users/GetUsers');
+  getUsers(name: string) {
+    const params = new HttpParams().set('name', name);
+    return this.http.get<string[]>(this._baseUrl + 'api/Users/GetUsers', { params: params });
   }
 
   addUserVote(userName: string, vote: number) {
@@ -82,8 +83,9 @@ export class UserService {
     this.http.post(this._baseUrl + 'api/Users/Vote', { userName, vote }).subscribe();
   }
 
-  getUserVote(): Observable<UserVote[]> {
-    return this.http.get<UserVote[]>(this._baseUrl + 'api/Users/GetVotes');
+  getUserVote(name: string): Observable<UserVote[]> {
+    const params = new HttpParams().set('name', name);
+    return this.http.get<UserVote[]>(this._baseUrl + 'api/Users/GetVotes', { params: params });
   }
 
   finishVote() {
@@ -92,8 +94,8 @@ export class UserService {
     }
   }
 
-  resetUserVotes() {
-    this.http.post(this._baseUrl + 'api/Users/ResetVotes', null).subscribe();
+  resetUserVotes(name: string) {
+    this.http.post(this._baseUrl + 'api/Users/ResetVotes', name).subscribe();
     if (this._hubConnection) {
       this._hubConnection.invoke('ResetVotes');
     }
@@ -103,5 +105,21 @@ export class UserService {
       this._hubConnection.invoke('Send', data);
     }
   }
+  addUserToRoom(roomName: string) {
+    if (this._hubConnection) {
+      this._hubConnection.invoke('Join', roomName);
+    }
+  }
+
+  addRoom(room: Room) {
+    if (this._hubConnection) {
+      this._hubConnection.invoke('AddRoom', room);
+    }
+  }
+  getRooms() {
+    return this.http.get<Room[]>(this._baseUrl + 'api/Users/GetRooms');
+  }
 }
+
+
 

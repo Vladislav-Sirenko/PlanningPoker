@@ -19,22 +19,16 @@ namespace PlanningPoker.Controllers
         }
         
         [HttpGet("[action]")]
-        public Dictionary<string, string> GetUsers()
+        public List<string> GetUsers(string name)
         {
-            Dictionary<string,string> users = _userService.GetUsers();
+            List<string> users = _userService.GetUsersByRoom(name);
             return users;
         }
 
-        [HttpPost("[action]")]
-        public User AddUser([FromBody]User user)
-        {
-            _userService.AddUser(user);
-            return user;
-        }
         [HttpGet("[action]")]
-        public Dictionary<string, int> GetVotes()
+        public Dictionary<string, int> GetVotes(string name)
         {
-            Dictionary<string, int> usersVotes = _userService.GetVotes();
+            Dictionary<string, int> usersVotes = _userService.GetVotesForRoom(name);
             return usersVotes;
         }
 
@@ -46,16 +40,16 @@ namespace PlanningPoker.Controllers
         }
 
         [HttpPost("[action]")]
-        public void ResetVotes()
+        public void ResetVotes(string name)
         {
-            _userService.ResetVote();
+            _userService.ResetVote(name);
 
         }
 
-        [HttpPost("[action]")]
-        public void DeleteUser([FromBody] string user)
+        [HttpGet("[action]")]
+        public List<Room> GetRooms()
         {
-            _userService.DeleteUser(user);
+          return _userService.GetRooms();
         }
     }
 }

@@ -18,6 +18,7 @@ export class MessageComponent implements OnInit {
   }
 
   public sendMessage(): void {
+    this.userName = localStorage.getItem('UserName');
     const data = `${this.userName}: ${this.message}`;
 
     this.userService.sendMessage(data);

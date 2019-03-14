@@ -4,6 +4,7 @@ import { UserService } from '../user.service';
 import { Subject } from 'rxjs/Subject';
 import { UserVote } from '../userVote.model';
 import { TouchSequence } from 'selenium-webdriver';
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-room',
   templateUrl: './room.component.html',
@@ -13,6 +14,7 @@ export class RoomComponent implements OnInit {
 
   @Input() userName: string;
   @Output() logout = new EventEmitter<string>();
+  name: string;
   cards = Cards;
   votesCount: 0;
   userVote: UserVote[] = [];
@@ -20,16 +22,16 @@ export class RoomComponent implements OnInit {
   private subscribeUntil$: Subject<any>;
   public users: string[] = [];
   ngOnInit(): void {
-    this.userService.getUsers().subscribe(users => {
+    this.userService.getUsers(this.name).subscribe(users => {
       this.users = [];
       // tslint:disable-next-line:forin
       for (const user in users) {
-        this.users.push(user);
+        this.users.push(users[user]);
       }
     });
     this.userService.finishVoting
       .subscribe(() => {
-        this.userService.getUserVote().subscribe(result => {
+        this.userService.getUserVote(this.name).subscribe(result => {
           this.userVote = [];
           for (const user in result) {
             if (user) {
@@ -47,44 +49,44 @@ export class RoomComponent implements OnInit {
           this.userVote = [];
           localStorage.removeItem('UserVote');
           this.users = [];
-          this.userService.getUsers().subscribe(users => {
+          this.userService.getUsers(this.name).subscribe(users => {
             this.users = [];
             // tslint:disable-next-line:forin
             for (const user in users) {
-              this.users.push(user);
+              this.users.push(users[user]);
             }
           });
         });
     this.userService.changed
       .subscribe(
         () => {
-          this.userService.getUsers().subscribe(users => {
+          this.userService.getUsers(this.name).subscribe(users => {
             this.users = [];
             // tslint:disable-next-line:forin
             for (const user in users) {
-              this.users.push(user);
+              this.users.push(users[user]);
             }
           });
         });
     this.userService.disconnected
       .subscribe(
         (name) => {
-          this.userService.getUsers().subscribe(users => {
+          this.userService.getUsers(this.name).subscribe(users => {
             this.userVote[this.users.indexOf(name)] = null;
             this.Votes[this.users.indexOf(name)] = null;
             this.users = [];
             // tslint:disable-next-line:forin
             for (const user in users) {
-              this.users.push(user);
+              this.users.push(users[user]);
             }
           });
         });
     this.userService.voted.subscribe((name) => {
-      this.userService.getUsers().subscribe(users => {
+      this.userService.getUsers(this.name).subscribe(users => {
         this.users = [];
         // tslint:disable-next-line:forin
         for (const user in users) {
-          this.users.push(user);
+          this.users.push(users[user]);
         }
       });
       const index = this.users.indexOf(name.split(' ')[0]);
@@ -120,7 +122,7 @@ export class RoomComponent implements OnInit {
 
   resetVotes() {
     localStorage.removeItem('UserVote');
-    this.userService.resetUserVotes();
+    this.userService.resetUserVotes(this.name);
     this.votesCount = 0;
   }
 
@@ -136,11 +138,15 @@ export class RoomComponent implements OnInit {
     return false;
   }
 
-  constructor(private userService: UserService) {
-    this.userService.getUsers().subscribe(users => {
+  constructor(private userService: UserService, private route: ActivatedRoute) {
+    this.route.queryParams.subscribe(params => {
+      this.name = params['name'];
+    });
+
+    this.userService.getUsers(this.name).subscribe(users => {
       // tslint:disable-next-line:forin
       for (const user in users) {
-        this.users.push(user);
+        this.users.push(users[user]);
       }
     });
   }
