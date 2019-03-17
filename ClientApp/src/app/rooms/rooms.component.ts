@@ -12,7 +12,6 @@ import { UserService } from '../user.service';
 export class RoomsComponent implements OnInit {
   name: string;
   rooms: Room[] = [];
-  inRoom = false;
   constructor(private roouter: Router, private userService: UserService) { }
   @Input() userName: string;
   ngOnInit() {
@@ -27,6 +26,10 @@ export class RoomsComponent implements OnInit {
   }
 
   addRoom() {
+    // const dialogRef = dialog.open(UserProfileComponent, {
+    //   height: '400px',
+    //   width: '600px',
+    // });
     const room = new Room(UUID.UUID(), this.name);
     this.rooms.push(room);
     this.userService.addRoom(room);
@@ -39,7 +42,9 @@ export class RoomsComponent implements OnInit {
   }
   joinRoom(id: string, name: string) {
     this.userService.addUserToRoom(name);
-    this.inRoom = true;
     this.roouter.navigate(['room', id], { queryParams: { name: name } });
+  }
+  inRoom(): boolean {
+  return window.location.href.includes('/room');
   }
 }

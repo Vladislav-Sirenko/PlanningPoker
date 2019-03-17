@@ -1,11 +1,10 @@
-<div *ngIf="!inRoom">
+<div *ngIf="!inRoom()">
 <div class="input-group mb-3">
   <div class="input-group-prepend">
   </div>
   <input type="text" [(ngModel)]="name" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
 </div>
 <button (click)="addRoom()" class="btn btn-primary mt-2">Add Room</button>
-
         
   <div class="col-3" *ngFor="let room of rooms" (click)="cl()" class="text-dark">{{room.name}}<br>
   

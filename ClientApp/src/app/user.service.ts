@@ -15,12 +15,14 @@ export class UserService {
   private _cleared = new Subject<void>();
   private _changed = new Subject<string>();
   private _disconnected = new Subject<string>();
+  private _join = new Subject<string>();
   private _voted = new Subject<string>();
   private _finishVoting = new Subject<void>();
   private _send = new Subject<string>();
   public cleared = this._cleared.asObservable();
   public changed = this._changed.asObservable();
   public send = this._send.asObservable();
+  public join  = this._join.asObservable();
   public voted = this._voted.asObservable();
   public disconnected = this._disconnected.asObservable();
   public finishVoting = this._finishVoting.asObservable();
@@ -52,6 +54,9 @@ export class UserService {
     });
     this._hubConnection.on('GetVotes', () => {
       this._finishVoting.next();
+    });
+    this._hubConnection.on('Join', (name: string) => {
+      this._join.next(name);
     });
   }
 

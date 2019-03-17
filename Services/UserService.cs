@@ -61,6 +61,9 @@ namespace PlanningPoker.Services
             try
             {
                 _userConnections.Remove(new UserConnection(){ConnectionId = id ,Name = item});
+                var removedUser = userRooms.First(x=> x.ConnectionId == id);
+                userRooms.Remove(removedUser);
+                
                 Log.Information(item + "successfully removed from local database");
             }
             catch (Exception ex)

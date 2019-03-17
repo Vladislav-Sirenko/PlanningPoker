@@ -4,7 +4,7 @@ import { UserService } from '../user.service';
 import { Subject } from 'rxjs/Subject';
 import { UserVote } from '../userVote.model';
 import { TouchSequence } from 'selenium-webdriver';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-room',
   templateUrl: './room.component.html',
@@ -19,7 +19,6 @@ export class RoomComponent implements OnInit {
   votesCount: 0;
   userVote: UserVote[] = [];
   Votes: string[] = [];
-  private subscribeUntil$: Subject<any>;
   public users: string[] = [];
   ngOnInit(): void {
     this.userService.getUsers(this.name).subscribe(users => {
@@ -57,7 +56,7 @@ export class RoomComponent implements OnInit {
             }
           });
         });
-    this.userService.changed
+    this.userService.join
       .subscribe(
         () => {
           this.userService.getUsers(this.name).subscribe(users => {
@@ -103,11 +102,6 @@ export class RoomComponent implements OnInit {
     });
   }
 
-  // tslint:disable-next-line:use-life-cycle-interface
-  ngOnDestroy() {
-    this.subscribeUntil$.next();
-    this.subscribeUntil$.complete();
-  }
 
   onChanged(number: number) {
     const userName = localStorage.getItem('UserName');
@@ -129,6 +123,7 @@ export class RoomComponent implements OnInit {
   logOut() {
     const userName = localStorage.getItem('UserName');
     this.userService.deleteUser(userName);
+    this.router.navigate(['']); //  ???
   }
 
   buttonDisabled(): boolean {
@@ -138,7 +133,7 @@ export class RoomComponent implements OnInit {
     return false;
   }
 
-  constructor(private userService: UserService, private route: ActivatedRoute) {
+  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute) {
     this.route.queryParams.subscribe(params => {
       this.name = params['name'];
     });

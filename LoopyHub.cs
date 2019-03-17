@@ -27,7 +27,9 @@ namespace PlanningPoker
         public Task Join(string id)
         {
             _userService.AddUserToGroup(new UserConnection(){Name = id,ConnectionId = Context.ConnectionId});
-            return Groups.AddToGroupAsync(Context.ConnectionId, id);
+             Groups.AddToGroupAsync(Context.ConnectionId, id);
+             var group = _userService.GetRoomName(Context.ConnectionId);
+              return Clients.Group(group).SendAsync("Join");
         }
         public Task Send(string data)
         {
@@ -63,8 +65,8 @@ namespace PlanningPoker
             var group = _userService.GetRoomName(Context.ConnectionId);
             Groups.RemoveFromGroupAsync(group, Context.ConnectionId);
             Log.Information("Trying to delete user");
-            var name = _userService.GetUserByConnection(Context.ConnectionId);
-            Log.Information("User disconnected with connection name:" + name);
+          //  var name = _userService.GetUserByConnection(Context.ConnectionId);
+            Log.Information("User disconnected with connection name:" + data);
             _userService.DeleteUser(Context.ConnectionId,data);
             return Clients.All.SendAsync("Disconnect", data);
         }
