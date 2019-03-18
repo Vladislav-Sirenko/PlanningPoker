@@ -84,6 +84,11 @@ namespace PlanningPoker.Services
         {
             _rooms.Add(room);
         }
+        public void DeleteRoom(string id)
+        {
+            var remroom = _rooms.First(x=>x.id == id);
+            _rooms.Remove(remroom);
+        }
         public List<Room> GetRooms()
         {
             return _rooms;

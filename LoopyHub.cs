@@ -18,10 +18,14 @@ namespace PlanningPoker
             _userService = userService;
         }
 
-         public Task AddRoom(Room room)
+         public Task AddRoom()
         {
-            _userService.AddRoom(room);
-            return Clients.All.SendAsync("AddRoom");
+            return Clients.Others.SendAsync("AddRoom");
+        }
+        
+         public Task DeleteRoom()
+        {
+            return Clients.Others.SendAsync("DeleteRoom");
         }
 
         public Task Join(string id)

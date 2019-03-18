@@ -21,30 +21,35 @@ export class RoomsComponent implements OnInit {
           this.rooms.push(new Room(rooms[room].id, rooms[room].name));
         }
       }
-      console.log(this.rooms);
+    });
+    this.userService.roomsChanged.subscribe(() => {
+      this.userService.getRooms().subscribe(rooms => {
+        this.rooms = [];
+        for (const room in rooms) {
+          if (room) {
+            this.rooms.push(rooms[room]);
+          }
+        }
+      });
     });
   }
 
   addRoom() {
-    // const dialogRef = dialog.open(UserProfileComponent, {
-    //   height: '400px',
-    //   width: '600px',
-    // });
     const room = new Room(UUID.UUID(), this.name);
     this.rooms.push(room);
     this.userService.addRoom(room);
-    console.log(room);
-    console.log(this.rooms);
   }
   deleteRoom(id: string) {
     const index = this.rooms.findIndex(room => room.id === id);
+    const removedroom = this.rooms[index];
     this.rooms.splice(index, 1);
+   this.userService.deleteRoom(removedroom);
   }
   joinRoom(id: string, name: string) {
     this.userService.addUserToRoom(name);
     this.roouter.navigate(['room', id], { queryParams: { name: name } });
   }
   inRoom(): boolean {
-  return window.location.href.includes('/room');
+    return window.location.href.includes('/room');
   }
 }
