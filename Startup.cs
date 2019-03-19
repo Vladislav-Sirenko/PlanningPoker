@@ -1,11 +1,13 @@
 using System;
 using System.IO;
 using System.Reflection;
+using DAL.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlanningPoker.Services;
@@ -31,6 +33,9 @@ namespace PlanningPoker
                 {
                     options.Conventions.AuthorizePage("/SecurePage");
                 });
+            services.AddDbContext<PokerContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("PlanningPokerDatabase")));
+            
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
