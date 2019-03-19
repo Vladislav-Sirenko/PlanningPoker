@@ -43,15 +43,20 @@ namespace PlanningPoker.Services
         public void ResetVote(string id)
         {
             var userlist = GetUsersByRoom(id);
+            var removedUserVotes = new List<UserVote>();
             foreach (var uservote in _usersVotes)
             {
                 foreach (var user in userlist)
                 {
                     if (user == uservote.UserName)
                     {
-                        _usersVotes.Remove(uservote);
+                        removedUserVotes.Add(uservote);
                     }
                 }
+            }
+            foreach (var userVote in removedUserVotes)
+            {
+                _usersVotes.Remove(userVote);
             }
         }
 
