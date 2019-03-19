@@ -18,7 +18,7 @@ namespace PlanningPoker.Services
         List<Room> GetRooms();
         void AddUserToGroup(UserConnection userConnection);
         string GetRoomName(string id);
-        List<string> GetUsersByRoom(string name);
-        Dictionary<string, int> GetVotesForRoom(string name);
+        List<string> GetUsersByRoom(string id);
+        Dictionary<string, int> GetVotesForRoom(string id);
     }
 }

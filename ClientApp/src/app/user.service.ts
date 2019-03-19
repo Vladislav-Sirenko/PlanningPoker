@@ -83,9 +83,8 @@ export class UserService {
       this._hubConnection.invoke('Disconnect', user);
     }
   }
-  getUsers(name: string) {
-    const params = new HttpParams().set('name', name);
-    return this.http.get<string[]>(this._baseUrl + 'api/Rooms/GetUsersByRoom', { params: params });
+  getUsers(id: string) {
+    return this.http.get<string[]>(this._baseUrl + 'api/Rooms/' + id + '/Users');
   }
 
   addUserVote(userName: string, vote: number) {
@@ -96,9 +95,8 @@ export class UserService {
     this.http.post(this._baseUrl + 'api/Rooms/UserVote', { userName, vote }).subscribe();
   }
 
-  getUserVote(name: string): Observable<UserVote[]> {
-    const params = new HttpParams().set('name', name);
-    return this.http.get<UserVote[]>(this._baseUrl + 'api/Rooms/GetVotesByRoom', { params: params });
+  getUserVote(id: string): Observable<UserVote[]> {
+    return this.http.get<UserVote[]>(this._baseUrl + 'api/Rooms/' + id + '/Votes');
   }
 
   finishVote() {
@@ -107,8 +105,8 @@ export class UserService {
     }
   }
 
-  resetUserVotes(name: string) {
-    this.http.post(this._baseUrl + 'api/Rooms/ResetVotesByRoom', name).subscribe();
+  resetUserVotes(id: string) {
+    this.http.post(this._baseUrl + 'api/Rooms/' + id + '/ResetVotes', id).subscribe();
     if (this._hubConnection) {
       this._hubConnection.invoke('ResetVotes');
     }

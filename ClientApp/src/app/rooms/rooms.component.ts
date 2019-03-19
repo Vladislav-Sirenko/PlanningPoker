@@ -43,11 +43,11 @@ export class RoomsComponent implements OnInit {
     const index = this.rooms.findIndex(room => room.id === id);
     const removedroom = this.rooms[index];
     this.rooms.splice(index, 1);
-   this.userService.deleteRoom(removedroom);
+    this.userService.deleteRoom(removedroom);
   }
   joinRoom(id: string, name: string) {
     this.userService.addUserToRoom(name);
-    this.roouter.navigate(['room', id], { queryParams: { name: name } });
+    this.roouter.navigate(['room', id], { queryParams: { id: id, name: name } });
   }
   inRoom(): boolean {
     return window.location.href.includes('/room');

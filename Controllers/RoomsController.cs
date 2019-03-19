@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using PlanningPoker.Models;
 using PlanningPoker.Services;
 
@@ -47,31 +48,32 @@ namespace PlanningPoker.Controllers
             _userService.DeleteRoom(id);
         }
 
-        [HttpGet("[action]")]
-        public List<string> GetUsersByRoom(string name)
+        [HttpGet("{id}/Users")]
+        
+        public List<string> GetUsersByRoom(string id)
         {
-            List<string> users = _userService.GetUsersByRoom(name);
+            List<string> users = _userService.GetUsersByRoom(id);
             return users;
         }
 
-        [HttpGet("[action]")]
-        public Dictionary<string, int> GetVotesByRoom(string name)
+        [HttpGet("{id}/Votes")]
+        public Dictionary<string, int> GetVotesByRoom(string id)
         {
-            Dictionary<string, int> usersVotes = _userService.GetVotesForRoom(name);
+            Dictionary<string, int> usersVotes = _userService.GetVotesForRoom(id);
             return usersVotes;
+        }
+
+        [HttpPost("{id}/ResetVotes")]
+        public void ResetVotesByRoom(string id)
+        {
+            _userService.ResetVote(id);
+
         }
 
         [HttpPost("[action]")]
         public void UserVote([FromBody] UserVote userVote)
         {
             _userService.AddVote(userVote);
-
-        }
-
-        [HttpPost("[action]")]
-        public void ResetVotesByRoom(string name)
-        {
-            _userService.ResetVote(name);
 
         }
     }

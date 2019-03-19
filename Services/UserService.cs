@@ -29,9 +29,9 @@ namespace PlanningPoker.Services
         {
             _usersVotes.Add( new UserVote(){UserName = userVote.UserName, Vote = userVote.Vote});
         }
-        public Dictionary<string, int> GetVotesForRoom(string name)
+        public Dictionary<string, int> GetVotesForRoom(string id)
         {
-            var users = GetUsersByRoom(name);
+            var users = GetUsersByRoom(id);
             Dictionary<string,int> votes = new Dictionary<string, int>();
             foreach (var user in users)
             {
@@ -40,9 +40,9 @@ namespace PlanningPoker.Services
             return votes;
         }
 
-        public void ResetVote(string name)
+        public void ResetVote(string id)
         {
-            var userlist = GetUsersByRoom(name);
+            var userlist = GetUsersByRoom(id);
             foreach (var uservote in _usersVotes)
             {
                 foreach (var user in userlist)
@@ -104,9 +104,10 @@ namespace PlanningPoker.Services
             return userRooms.First(x => x.ConnectionId == id).Name;
         }
 
-        public List<string> GetUsersByRoom(string name)
+        public List<string> GetUsersByRoom(string id)
         {
-            var userlist = userRooms.Where(x => x.Name == name);
+            var roomName = _rooms.First(x => x.id == id).name;
+            var userlist = userRooms.Where(x => x.Name == roomName);
             List<string> userNames = new List<string>();
             foreach (var user in userlist)
             {
