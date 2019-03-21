@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PlanningPoker.Models;
@@ -10,47 +11,64 @@ namespace PlanningPoker.Services
 {
     public class UserService : IUserService
     {
-        private readonly Dictionary<string, string> _users;
-        private Dictionary<string, int> _usersVotes;
-        private Dictionary<string, string> _userConnections;
+        private readonly List<Room> _rooms;
+        private readonly List<UserConnection> userRooms;
+        private List<UserVote> _usersVotes;
+        private List<UserConnection> _userConnections;
 
         public UserService()
         {
-            _users = new Dictionary<string, string>();
-            _usersVotes = new Dictionary<string, int>();
-           _userConnections = new Dictionary<string, string>();
-    }
-        public User AddUser(User user)
-        {
-            _users.Add(user.Name, user.Password);
-            return user;
+            _rooms = new List<Room>();
+            _usersVotes = new List<UserVote>();
+            _userConnections = new List<UserConnection>();
+            userRooms = new List<UserConnection>();
+
         }
 
         public void AddVote(UserVote userVote)
         {
-
-            _usersVotes.Add(userVote.UserName, userVote.Vote);
-
+            _usersVotes.Add( new UserVote(){UserName = userVote.UserName, Vote = userVote.Vote});
         }
-        public Dictionary<string, int> GetVotes()
+        public Dictionary<string, int> GetVotesForRoom(string id)
         {
-            return _usersVotes;
+            var users = GetUsersByRoom(id);
+            Dictionary<string,int> votes = new Dictionary<string, int>();
+            foreach (var user in users)
+            {
+                votes.Add(user,_usersVotes.First(x=>x.UserName ==user).Vote);
+            }
+            return votes;
         }
 
-        public Dictionary<string, string> GetUsers()
+        public void ResetVote(string id)
         {
-            return _users;
+            var userlist = GetUsersByRoom(id);
+            var removedUserVotes = new List<UserVote>();
+            foreach (var uservote in _usersVotes)
+            {
+                foreach (var user in userlist)
+                {
+                    if (user == uservote.UserName)
+                    {
+                        removedUserVotes.Add(uservote);
+                    }
+                }
+            }
+            foreach (var userVote in removedUserVotes)
+            {
+                _usersVotes.Remove(userVote);
+            }
         }
 
-        public void ResetVote() => _usersVotes.Clear();
 
-
-        public void DeleteUser(string item)
+        public void DeleteUser(string id, string item)
         {
             try
             {
-                _users.Remove(item);
-                _userConnections.Remove(item);
+                _userConnections.Remove(new UserConnection(){ConnectionId = id ,Name = item});
+                var removedUser = userRooms.First(x=> x.ConnectionId == id);
+                userRooms.Remove(removedUser);
+                
                 Log.Information(item + "successfully removed from local database");
             }
             catch (Exception ex)
@@ -60,12 +78,48 @@ namespace PlanningPoker.Services
         }
         public void AddUserConnection(string id, string name)
         {
-            _userConnections.TryAdd(id, name);
+            _userConnections.Add(new UserConnection() { Name = name, ConnectionId = id });
         }
         public string GetUserByConnection(string id)
         {
-          _userConnections.TryGetValue(id,out string name);
+            var name = _userConnections.First(x => x.ConnectionId == id).Name;
             return name;
+        }
+        public void AddRoom(Room room)
+        {
+            _rooms.Add(room);
+        }
+        public void DeleteRoom(string id)
+        {
+            var remroom = _rooms.First(x=>x.id == id);
+            _rooms.Remove(remroom);
+        }
+        public List<Room> GetRooms()
+        {
+            return _rooms;
+        }
+
+        public void AddUserToGroup(UserConnection userConnection)
+        {
+            userRooms.Add(userConnection);
+        }
+
+        public string GetRoomName(string id)
+        {
+            return userRooms.First(x => x.ConnectionId == id).Name;
+        }
+
+        public List<string> GetUsersByRoom(string id)
+        {
+            var roomName = _rooms.First(x => x.id == id).name;
+            var userlist = userRooms.Where(x => x.Name == roomName);
+            List<string> userNames = new List<string>();
+            foreach (var user in userlist)
+            {
+                userNames.Add(GetUserByConnection(user.ConnectionId));
+            }
+            return userNames;
+
         }
     }
 }

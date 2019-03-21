@@ -4,6 +4,7 @@ import { UserService } from '../user.service';
 import { Subject } from 'rxjs/Subject';
 import { UserVote } from '../userVote.model';
 import { TouchSequence } from 'selenium-webdriver';
+import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-room',
   templateUrl: './room.component.html',
@@ -13,23 +14,24 @@ export class RoomComponent implements OnInit {
 
   @Input() userName: string;
   @Output() logout = new EventEmitter<string>();
+  name: string;
   cards = Cards;
   votesCount: 0;
   userVote: UserVote[] = [];
   Votes: string[] = [];
-  private subscribeUntil$: Subject<any>;
   public users: string[] = [];
+  id: string;
   ngOnInit(): void {
-    this.userService.getUsers().subscribe(users => {
+    this.userService.getUsers(this.id).subscribe(users => {
       this.users = [];
       // tslint:disable-next-line:forin
       for (const user in users) {
-        this.users.push(user);
+        this.users.push(users[user]);
       }
     });
     this.userService.finishVoting
       .subscribe(() => {
-        this.userService.getUserVote().subscribe(result => {
+        this.userService.getUserVote(this.id).subscribe(result => {
           this.userVote = [];
           for (const user in result) {
             if (user) {
@@ -47,44 +49,44 @@ export class RoomComponent implements OnInit {
           this.userVote = [];
           localStorage.removeItem('UserVote');
           this.users = [];
-          this.userService.getUsers().subscribe(users => {
+          this.userService.getUsers(this.id).subscribe(users => {
             this.users = [];
             // tslint:disable-next-line:forin
             for (const user in users) {
-              this.users.push(user);
+              this.users.push(users[user]);
             }
           });
         });
-    this.userService.changed
+    this.userService.join
       .subscribe(
         () => {
-          this.userService.getUsers().subscribe(users => {
+          this.userService.getUsers(this.id).subscribe(users => {
             this.users = [];
             // tslint:disable-next-line:forin
             for (const user in users) {
-              this.users.push(user);
+              this.users.push(users[user]);
             }
           });
         });
     this.userService.disconnected
       .subscribe(
         (name) => {
-          this.userService.getUsers().subscribe(users => {
+          this.userService.getUsers(this.id).subscribe(users => {
             this.userVote[this.users.indexOf(name)] = null;
             this.Votes[this.users.indexOf(name)] = null;
             this.users = [];
             // tslint:disable-next-line:forin
             for (const user in users) {
-              this.users.push(user);
+              this.users.push(users[user]);
             }
           });
         });
     this.userService.voted.subscribe((name) => {
-      this.userService.getUsers().subscribe(users => {
+      this.userService.getUsers(this.id).subscribe(users => {
         this.users = [];
         // tslint:disable-next-line:forin
         for (const user in users) {
-          this.users.push(user);
+          this.users.push(users[user]);
         }
       });
       const index = this.users.indexOf(name.split(' ')[0]);
@@ -101,11 +103,6 @@ export class RoomComponent implements OnInit {
     });
   }
 
-  // tslint:disable-next-line:use-life-cycle-interface
-  ngOnDestroy() {
-    this.subscribeUntil$.next();
-    this.subscribeUntil$.complete();
-  }
 
   onChanged(number: number) {
     const userName = localStorage.getItem('UserName');
@@ -120,13 +117,14 @@ export class RoomComponent implements OnInit {
 
   resetVotes() {
     localStorage.removeItem('UserVote');
-    this.userService.resetUserVotes();
+    this.userService.resetUserVotes(this.id);
     this.votesCount = 0;
   }
 
   logOut() {
     const userName = localStorage.getItem('UserName');
     this.userService.deleteUser(userName);
+    this.router.navigate(['']); //  ???
   }
 
   buttonDisabled(): boolean {
@@ -136,11 +134,16 @@ export class RoomComponent implements OnInit {
     return false;
   }
 
-  constructor(private userService: UserService) {
-    this.userService.getUsers().subscribe(users => {
+  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute) {
+    this.route.queryParams.subscribe(params => {
+      this.name = params['name'];
+      this.id = params['id'];
+    });
+
+    this.userService.getUsers(this.id).subscribe(users => {
       // tslint:disable-next-line:forin
       for (const user in users) {
-        this.users.push(user);
+        this.users.push(users[user]);
       }
     });
   }

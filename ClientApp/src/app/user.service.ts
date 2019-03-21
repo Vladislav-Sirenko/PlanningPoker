@@ -1,10 +1,11 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { User } from './user.model';
 import * as signalR from '@aspnet/signalr';
 import { Subject } from 'rxjs/Subject';
 import { UserVote } from './userVote.model';
 import { Observable } from 'rxjs/Observable';
+import { Room } from './rooms/room.model';
 @Injectable()
 export class UserService {
 
@@ -14,12 +15,16 @@ export class UserService {
   private _cleared = new Subject<void>();
   private _changed = new Subject<string>();
   private _disconnected = new Subject<string>();
+  private _join = new Subject<string>();
   private _voted = new Subject<string>();
+  private _roomChanged = new Subject<void>();
   private _finishVoting = new Subject<void>();
   private _send = new Subject<string>();
   public cleared = this._cleared.asObservable();
   public changed = this._changed.asObservable();
+  public roomsChanged = this._roomChanged.asObservable();
   public send = this._send.asObservable();
+  public join = this._join.asObservable();
   public voted = this._voted.asObservable();
   public disconnected = this._disconnected.asObservable();
   public finishVoting = this._finishVoting.asObservable();
@@ -52,11 +57,19 @@ export class UserService {
     this._hubConnection.on('GetVotes', () => {
       this._finishVoting.next();
     });
+    this._hubConnection.on('Join', (name: string) => {
+      this._join.next(name);
+    });
+    this._hubConnection.on('AddRoom', () => {
+      this._roomChanged.next();
+    });
+    this._hubConnection.on('DeleteRoom', () => {
+      this._roomChanged.next();
+    });
   }
 
 
   addUser(user: User) {
-    this.http.post(this._baseUrl + 'api/Users/AddUser', user).subscribe();
     localStorage.setItem('UserName', user.Name);
     const data = `${user.Name}`;
     if (this._hubConnection) {
@@ -70,8 +83,8 @@ export class UserService {
       this._hubConnection.invoke('Disconnect', user);
     }
   }
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this._baseUrl + 'api/Users/GetUsers');
+  getUsers(id: string) {
+    return this.http.get<string[]>(this._baseUrl + 'api/Rooms/' + id + '/Users');
   }
 
   addUserVote(userName: string, vote: number) {
@@ -79,11 +92,11 @@ export class UserService {
     if (this._hubConnection) {
       this._hubConnection.invoke('Vote', data);
     }
-    this.http.post(this._baseUrl + 'api/Users/Vote', { userName, vote }).subscribe();
+    this.http.post(this._baseUrl + 'api/Rooms/UserVote', { userName, vote }).subscribe();
   }
 
-  getUserVote(): Observable<UserVote[]> {
-    return this.http.get<UserVote[]>(this._baseUrl + 'api/Users/GetVotes');
+  getUserVote(id: string): Observable<UserVote[]> {
+    return this.http.get<UserVote[]>(this._baseUrl + 'api/Rooms/' + id + '/Votes');
   }
 
   finishVote() {
@@ -92,8 +105,8 @@ export class UserService {
     }
   }
 
-  resetUserVotes() {
-    this.http.post(this._baseUrl + 'api/Users/ResetVotes', null).subscribe();
+  resetUserVotes(id: string) {
+    this.http.post(this._baseUrl + 'api/Rooms/' + id + '/ResetVotes', id).subscribe();
     if (this._hubConnection) {
       this._hubConnection.invoke('ResetVotes');
     }
@@ -103,5 +116,29 @@ export class UserService {
       this._hubConnection.invoke('Send', data);
     }
   }
+  addUserToRoom(roomName: string) {
+    if (this._hubConnection) {
+      this._hubConnection.invoke('Join', roomName);
+    }
+  }
+
+  addRoom(room: Room) {
+    this.http.post(this._baseUrl + 'api/Rooms', room).subscribe();
+    if (this._hubConnection) {
+      this._hubConnection.invoke('AddRoom');
+    }
+  }
+  getRooms() {
+    return this.http.get<Room[]>(this._baseUrl + 'api/Rooms');
+  }
+  deleteRoom(room: Room) {
+    if (this._hubConnection) {
+      this._hubConnection.invoke('DeleteRoom');
+    }
+    const id = room.id;
+    return this.http.delete(this._baseUrl + 'api/Rooms/' + id).subscribe();
+  }
 }
+
+
 

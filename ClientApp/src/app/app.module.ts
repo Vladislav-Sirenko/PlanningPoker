@@ -11,6 +11,7 @@ import { HeaderComponent } from './header/header.component';
 import { RoomComponent } from './room/room.component';
 import { UserService } from './user.service';
 import { MessageComponent } from './message/message.component';
+import { RoomsComponent } from './rooms/rooms.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { MessageComponent } from './message/message.component';
     HeaderComponent,
     RoomComponent,
     MessageComponent,
+    RoomsComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -27,6 +29,10 @@ import { MessageComponent } from './message/message.component';
     FormsModule,
     RouterModule.forRoot([
       { path: 'app', component: AppComponent },
+      { path: 'room/:id', component: RoomComponent ,
+      data: {
+        type: 'edit'
+      } }
     ])
   ],
   providers: [UserService],
