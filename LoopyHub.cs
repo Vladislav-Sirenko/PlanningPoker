@@ -12,31 +12,33 @@ namespace PlanningPoker
 {
     public class LoopyHub : Hub
     {
-       
-        IUserService _userService;
+        readonly IUserService _userService;
         public LoopyHub(IUserService userService)
         {
             _userService = userService;
         }
 
-         public Task AddRoom([FromBody] Room room)
+        public Task AddRoom([FromBody] Room room)
         {
+            Log.Information("User:" + _userService.GetUserByConnection(Context.ConnectionId) + " trying to add room:" + room.name);
             _userService.AddRoom(room, Context.ConnectionId);
             return Clients.All.SendAsync("AddRoom");
         }
-        
-         public Task DeleteRoom(string id)
+
+        public Task DeleteRoom(string id)
         {
+            Log.Information("User:" + _userService.GetUserByConnection(Context.ConnectionId) + " trying to delete room:" + id);
             _userService.DeleteRoom(id);
             return Clients.All.SendAsync("DeleteRoom");
         }
 
         public Task Join(string id)
         {
-            _userService.AddUserToGroup(new UserConnection(){Name = id,ConnectionId = Context.ConnectionId});
-             Groups.AddToGroupAsync(Context.ConnectionId, id);
-             var group = _userService.GetRoomName(Context.ConnectionId);
-              return Clients.Group(group).SendAsync("Join");
+            _userService.AddUserToGroup(new UserConnection() { Name = id, ConnectionId = Context.ConnectionId });
+            Groups.AddToGroupAsync(Context.ConnectionId, id);
+            Log.Information("User:"+_userService.GetUserByConnection(Context.ConnectionId) +" joined room:"+id);
+            var group = _userService.GetRoomName(Context.ConnectionId);
+            return Clients.Group(group).SendAsync("Join");
         }
         public Task Send(string data)
         {
@@ -45,19 +47,19 @@ namespace PlanningPoker
         }
         public Task Vote(string data)
         {
-          var group = _userService.GetRoomName(Context.ConnectionId);
+            var group = _userService.GetRoomName(Context.ConnectionId);
             return Clients.Group(group).SendAsync("Vote", data);
         }
 
         public Task ResetVotes()
         {
-          var group = _userService.GetRoomName(Context.ConnectionId);
+            var group = _userService.GetRoomName(Context.ConnectionId);
             return Clients.Group(group).SendAsync("ResetVotes");
         }
 
         public Task GetVotes()
         {
-          var group = _userService.GetRoomName(Context.ConnectionId);
+            var group = _userService.GetRoomName(Context.ConnectionId);
             return Clients.Group(group).SendAsync("GetVotes");
         }
 
@@ -87,7 +89,7 @@ namespace PlanningPoker
             var name = _userService.GetUserByConnection(Context.ConnectionId);
             _userService.DeleteUser(Context.ConnectionId);
             UserDisconnected();
-            return Clients.Group(group).SendAsync("Disconnect" , name);
+            return Clients.Group(group).SendAsync("Disconnect", name);
 
         }
 
@@ -100,8 +102,8 @@ namespace PlanningPoker
         public Task GetRoles(string id)
         {
             var group = _userService.GetRoomName(Context.ConnectionId);
-           var role = _userService.GetRoleForRoom(Context.ConnectionId,id);
-            return Clients.Caller.SendAsync("GetRoles",role);
+            var role = _userService.GetRoleForRoom(Context.ConnectionId, id);
+            return Clients.Caller.SendAsync("GetRoles", role);
         }
     }
 }

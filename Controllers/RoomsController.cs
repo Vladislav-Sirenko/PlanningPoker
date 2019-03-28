@@ -21,12 +21,6 @@ namespace PlanningPoker.Controllers
         [HttpGet]
         public List<Room> Get() => _userService.GetRooms();
 
-        // [HttpPost]
-        // public void Post([FromBody] Room room) => _userService.AddRoom(room);
-
-        // [HttpDelete("{id}")]
-        // public void Delete(string id) => _userService.DeleteRoom(id);
-
         [HttpGet("{id}/users")]
         public List<string> GetUsersByRoom(string id) => _userService.GetUsersByRoom(id);
 

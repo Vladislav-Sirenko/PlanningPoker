@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Serilog;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -72,6 +73,11 @@ namespace PlanningPoker
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .WriteTo.File("logs\\myapp.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

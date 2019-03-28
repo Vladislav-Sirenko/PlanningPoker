@@ -27,6 +27,7 @@ namespace PlanningPoker.Services
 
         public void AddVote(UserVote userVote)
         {
+            Log.Information("User:"+userVote.UserName + " voted "+userVote.Vote);
             _usersVotes.Add(new UserVote() { UserName = userVote.UserName, Vote = userVote.Vote });
         }
         public Dictionary<string, int> GetVotesForRoom(string id)
@@ -81,9 +82,9 @@ namespace PlanningPoker.Services
 
                 Log.Information(removedUserConnection.Name + "successfully removed from local database");
             }
-            catch
+            catch(Exception ex)
             {
-                Log.Information("Disconnected user doesn`t exists in local database");
+                Log.Information("Disconnected user doesn`t exists in local database" + ex.Data);
             }
         }
         public void AddUserConnection(string id, string name)
@@ -99,11 +100,14 @@ namespace PlanningPoker.Services
         {
             room.CreatorId = id;
             _rooms.Add(room);
+            Log.Information("User:" + GetUserByConnection(id) + " added room:" + room.name);
+
         }
         public void DeleteRoom(string id)
         {
             var remroom = _rooms.First(x => x.id == id);
             _rooms.Remove(remroom);
+            Log.Information(remroom.name + "has been deleted");
         }
         public List<Room> GetRooms()
         {
