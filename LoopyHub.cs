@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PlanningPoker
 {
@@ -18,14 +19,16 @@ namespace PlanningPoker
             _userService = userService;
         }
 
-         public Task AddRoom()
+         public Task AddRoom([FromBody] Room room)
         {
-            return Clients.Others.SendAsync("AddRoom");
+            _userService.AddRoom(room, Context.ConnectionId);
+            return Clients.All.SendAsync("AddRoom");
         }
         
-         public Task DeleteRoom()
+         public Task DeleteRoom(string id)
         {
-            return Clients.Others.SendAsync("DeleteRoom");
+            _userService.DeleteRoom(id);
+            return Clients.All.SendAsync("DeleteRoom");
         }
 
         public Task Join(string id)
@@ -69,11 +72,36 @@ namespace PlanningPoker
             var group = _userService.GetRoomName(Context.ConnectionId);
             Groups.RemoveFromGroupAsync(group, Context.ConnectionId);
             Log.Information("Trying to delete user");
-          //  var name = _userService.GetUserByConnection(Context.ConnectionId);
             Log.Information("User disconnected with connection name:" + data);
-            _userService.DeleteUser(Context.ConnectionId,data);
-            return Clients.All.SendAsync("Disconnect", data);
+            _userService.DeleteUser(Context.ConnectionId);
+            UserDisconnected();
+            return Clients.Group(group).SendAsync("Disconnect", data);
         }
 
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            var group = _userService.GetRoomName(Context.ConnectionId);
+            Groups.RemoveFromGroupAsync(group, Context.ConnectionId);
+            Log.Information("Trying to delete user");
+            Log.Information("User disconnected with connection name:" + exception);
+            var name = _userService.GetUserByConnection(Context.ConnectionId);
+            _userService.DeleteUser(Context.ConnectionId);
+            UserDisconnected();
+            return Clients.Group(group).SendAsync("Disconnect" , name);
+
+        }
+
+        public Task UserDisconnected()
+        {
+            _userService.DeleteUser(Context.ConnectionId);
+            return Clients.Caller.SendAsync("UserDisconnect");
+        }
+
+        public Task GetRoles(string id)
+        {
+            var group = _userService.GetRoomName(Context.ConnectionId);
+           var role = _userService.GetRoleForRoom(Context.ConnectionId,id);
+            return Clients.Caller.SendAsync("GetRoles",role);
+        }
     }
 }

@@ -20,8 +20,12 @@ export class UserService {
   private _roomChanged = new Subject<void>();
   private _finishVoting = new Subject<void>();
   private _send = new Subject<string>();
+  private _roles = new Subject<string>();
+  private _userDisconnect = new Subject<void>();
+  public roles = this._roles.asObservable();
   public cleared = this._cleared.asObservable();
   public changed = this._changed.asObservable();
+  public userDisconnect = this._userDisconnect.asObservable();
   public roomsChanged = this._roomChanged.asObservable();
   public send = this._send.asObservable();
   public join = this._join.asObservable();
@@ -32,7 +36,7 @@ export class UserService {
   constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
     this._baseUrl = baseUrl;
     this._hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:5001/loopy')
+      .withUrl('loopy')
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
@@ -66,6 +70,12 @@ export class UserService {
     this._hubConnection.on('DeleteRoom', () => {
       this._roomChanged.next();
     });
+    this._hubConnection.on('GetRoles', (role: string) => {
+      this._roles.next(role);
+    });
+    this._hubConnection.on('UserDisconnect', () => {
+      this._userDisconnect.next();
+    });
   }
 
 
@@ -85,14 +95,6 @@ export class UserService {
   }
   getUsers(id: string) {
     return this.http.get<string[]>(this._baseUrl + 'api/Rooms/' + id + '/Users');
-  }
-
-  addUserVote(userName: string, vote: number) {
-    const data = `${userName} voted`;
-    if (this._hubConnection) {
-      this._hubConnection.invoke('Vote', data);
-    }
-    this.http.post(this._baseUrl + 'api/Rooms/UserVote', { userName, vote }).subscribe();
   }
 
   getUserVote(id: string): Observable<UserVote[]> {
@@ -123,20 +125,35 @@ export class UserService {
   }
 
   addRoom(room: Room) {
-    this.http.post(this._baseUrl + 'api/Rooms', room).subscribe();
     if (this._hubConnection) {
-      this._hubConnection.invoke('AddRoom');
+      this._hubConnection.invoke('AddRoom', room);
     }
   }
   getRooms() {
     return this.http.get<Room[]>(this._baseUrl + 'api/Rooms');
   }
-  deleteRoom(room: Room) {
+  getRoles(id: string) {
     if (this._hubConnection) {
-      this._hubConnection.invoke('DeleteRoom');
+      this._hubConnection.invoke('GetRoles', id);
     }
-    const id = room.id;
-    return this.http.delete(this._baseUrl + 'api/Rooms/' + id).subscribe();
+  }
+  deleteRoom(id: string) {
+    if (this._hubConnection) {
+      this._hubConnection.invoke('DeleteRoom', id);
+    }
+  }
+
+  addUserVote(userName: string, vote: number) {
+    const data = `${userName} voted`;
+    if (this._hubConnection) {
+      this._hubConnection.invoke('Vote', data);
+    }
+    this.http.post(this._baseUrl + 'api/Rooms/UserVote', { userName, vote }).subscribe();
+  }
+  logOut() {
+    if (this._hubConnection) {
+      this._hubConnection.invoke('UserDisconnected');
+    }
   }
 }
 

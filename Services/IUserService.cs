@@ -10,15 +10,17 @@ namespace PlanningPoker.Services
     {
         void AddVote(UserVote userVote);
         void ResetVote(string name);
-        void DeleteUser(string id, string item);
+        void DeleteUser(string id);
         void AddUserConnection(string id, string name);
         string GetUserByConnection(string id);
-        void AddRoom(Room room);
+        void AddRoom(Room room,string id);
         void DeleteRoom(string id);
         List<Room> GetRooms();
         void AddUserToGroup(UserConnection userConnection);
         string GetRoomName(string id);
         List<string> GetUsersByRoom(string id);
         Dictionary<string, int> GetVotesForRoom(string id);
+
+        string GetRoleForRoom(string userId,string roomId);
     }
 }

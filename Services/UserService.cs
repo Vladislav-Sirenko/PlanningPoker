@@ -27,17 +27,25 @@ namespace PlanningPoker.Services
 
         public void AddVote(UserVote userVote)
         {
-            _usersVotes.Add( new UserVote(){UserName = userVote.UserName, Vote = userVote.Vote});
+            _usersVotes.Add(new UserVote() { UserName = userVote.UserName, Vote = userVote.Vote });
         }
         public Dictionary<string, int> GetVotesForRoom(string id)
         {
             var users = GetUsersByRoom(id);
-            Dictionary<string,int> votes = new Dictionary<string, int>();
+            Dictionary<string, int> votes = new Dictionary<string, int>();
             foreach (var user in users)
             {
-                votes.Add(user,_usersVotes.First(x=>x.UserName ==user).Vote);
+                votes.Add(user, _usersVotes.First(x => x.UserName == user).Vote);
             }
             return votes;
+        }
+
+        public string GetRoleForRoom(string userId, string roomId)
+        {
+            var room = _rooms.First(x => x.id == roomId);
+            if (userId == room.CreatorId)
+                return "Admin";
+            return "Guest";
         }
 
         public void ResetVote(string id)
@@ -61,19 +69,21 @@ namespace PlanningPoker.Services
         }
 
 
-        public void DeleteUser(string id, string item)
+        public void DeleteUser(string id)
         {
             try
             {
-                _userConnections.Remove(new UserConnection(){ConnectionId = id ,Name = item});
-                var removedUser = userRooms.First(x=> x.ConnectionId == id);
+                var removedUserConnection = _userConnections.First(x => x.ConnectionId == id);
+                _userConnections.Remove(removedUserConnection);
+                var removedUser = userRooms.First(x => x.ConnectionId == id);
+                if(removedUser != null)
                 userRooms.Remove(removedUser);
-                
-                Log.Information(item + "successfully removed from local database");
+
+                Log.Information(removedUserConnection.Name + "successfully removed from local database");
             }
-            catch (Exception ex)
+            catch
             {
-                Log.Information(item + " doesn`t exists in local database");
+                Log.Information("Disconnected user doesn`t exists in local database");
             }
         }
         public void AddUserConnection(string id, string name)
@@ -85,13 +95,14 @@ namespace PlanningPoker.Services
             var name = _userConnections.First(x => x.ConnectionId == id).Name;
             return name;
         }
-        public void AddRoom(Room room)
+        public void AddRoom(Room room, string id)
         {
+            room.CreatorId = id;
             _rooms.Add(room);
         }
         public void DeleteRoom(string id)
         {
-            var remroom = _rooms.First(x=>x.id == id);
+            var remroom = _rooms.First(x => x.id == id);
             _rooms.Remove(remroom);
         }
         public List<Room> GetRooms()

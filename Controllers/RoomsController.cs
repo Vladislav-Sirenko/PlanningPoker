@@ -16,65 +16,27 @@ namespace PlanningPoker.Controllers
     {
         private readonly IUserService _userService;
 
-        public RoomsController(IUserService userService)
-        {
-            _userService = userService;
-        }
+        public RoomsController(IUserService userService) => _userService = userService;
 
-        // GET: api/Rooms
         [HttpGet]
-        public List<Room> Get()
-        {
-           return _userService.GetRooms();
-        }
+        public List<Room> Get() => _userService.GetRooms();
 
-        // POST: api/Rooms
-        [HttpPost]
-        public void Post([FromBody] Room room)
-        {
-            _userService.AddRoom(room);
-        }
+        // [HttpPost]
+        // public void Post([FromBody] Room room) => _userService.AddRoom(room);
 
-        // PUT: api/Rooms/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        // [HttpDelete("{id}")]
+        // public void Delete(string id) => _userService.DeleteRoom(id);
 
-        // DELETE: api/ApiWithActions/
-        [HttpDelete("{id}")]
-        public void Delete(string id)
-        {
-            _userService.DeleteRoom(id);
-        }
-
-        [HttpGet("{id}/Users")]
-        
-        public List<string> GetUsersByRoom(string id)
-        {
-            List<string> users = _userService.GetUsersByRoom(id);
-            return users;
-        }
+        [HttpGet("{id}/users")]
+        public List<string> GetUsersByRoom(string id) => _userService.GetUsersByRoom(id);
 
         [HttpGet("{id}/Votes")]
-        public Dictionary<string, int> GetVotesByRoom(string id)
-        {
-            Dictionary<string, int> usersVotes = _userService.GetVotesForRoom(id);
-            return usersVotes;
-        }
+        public Dictionary<string, int> GetVotesByRoom(string id) => _userService.GetVotesForRoom(id);
 
         [HttpPost("{id}/ResetVotes")]
-        public void ResetVotesByRoom(string id)
-        {
-            _userService.ResetVote(id);
-
-        }
+        public void ResetVotesByRoom(string id) => _userService.ResetVote(id);
 
         [HttpPost("[action]")]
-        public void UserVote([FromBody] UserVote userVote)
-        {
-            _userService.AddVote(userVote);
-
-        }
+        public void UserVote([FromBody] UserVote userVote) => _userService.AddVote(userVote);
     }
 }

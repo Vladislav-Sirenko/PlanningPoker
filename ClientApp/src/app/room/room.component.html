@@ -16,8 +16,8 @@
     </div>
 
     <div class="col-3  border" id="messagebox">
-        <button [disabled] = "buttonDisabled()" (click)="getVotes()" class="btn btn-primary mt-2">Finish Voting</button>
-        <button (click)="resetVotes()" class="btn btn-primary mt-2">Reset Votes</button>
+        <button *ngIf="role === 'Admin'" [disabled] = "buttonDisabled()" (click)="getVotes()" class="btn btn-primary mt-2">Finish Voting</button>
+        <button *ngIf="role === 'Admin'" (click)="resetVotes()" class="btn btn-primary mt-2">Reset Votes</button>
       <div class="row border bg-primary">
         <div class="col">
           <p>Active users</p>

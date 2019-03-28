@@ -19,9 +19,15 @@ export class RoomComponent implements OnInit {
   votesCount: 0;
   userVote: UserVote[] = [];
   Votes: string[] = [];
+  role: string;
   public users: string[] = [];
   id: string;
   ngOnInit(): void {
+    this.votesCount = 0;
+    this.userService.getRoles(this.id);
+    this.userService.roles.subscribe((role) => {
+      this.role = role;
+    });
     this.userService.getUsers(this.id).subscribe(users => {
       this.users = [];
       // tslint:disable-next-line:forin
@@ -47,6 +53,7 @@ export class RoomComponent implements OnInit {
         () => {
           this.Votes = [];
           this.userVote = [];
+          this.votesCount = 0;
           localStorage.removeItem('UserVote');
           this.users = [];
           this.userService.getUsers(this.id).subscribe(users => {
@@ -84,6 +91,7 @@ export class RoomComponent implements OnInit {
     this.userService.voted.subscribe((name) => {
       this.userService.getUsers(this.id).subscribe(users => {
         this.users = [];
+        this.votesCount++;
         // tslint:disable-next-line:forin
         for (const user in users) {
           this.users.push(users[user]);
@@ -107,7 +115,6 @@ export class RoomComponent implements OnInit {
   onChanged(number: number) {
     const userName = localStorage.getItem('UserName');
     localStorage.setItem('UserVote', number.toString());
-    this.votesCount++;
     this.userService.addUserVote(userName, number);
   }
 
@@ -118,13 +125,12 @@ export class RoomComponent implements OnInit {
   resetVotes() {
     localStorage.removeItem('UserVote');
     this.userService.resetUserVotes(this.id);
-    this.votesCount = 0;
   }
 
   logOut() {
     const userName = localStorage.getItem('UserName');
     this.userService.deleteUser(userName);
-    this.router.navigate(['']); //  ???
+    this.router.navigate(['']);
   }
 
   buttonDisabled(): boolean {

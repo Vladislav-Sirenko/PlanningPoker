@@ -36,14 +36,10 @@ export class RoomsComponent implements OnInit {
 
   addRoom() {
     const room = new Room(UUID.UUID(), this.name);
-    this.rooms.push(room);
     this.userService.addRoom(room);
   }
   deleteRoom(id: string) {
-    const index = this.rooms.findIndex(room => room.id === id);
-    const removedroom = this.rooms[index];
-    this.rooms.splice(index, 1);
-    this.userService.deleteRoom(removedroom);
+    this.userService.deleteRoom(id);
   }
   joinRoom(id: string, name: string) {
     this.userService.addUserToRoom(name);
@@ -51,5 +47,10 @@ export class RoomsComponent implements OnInit {
   }
   inRoom(): boolean {
     return window.location.href.includes('/room');
+  }
+  logOut() {
+    const userName = localStorage.removeItem('UserName');
+    this.userService.logOut();
+    this.roouter.navigate(['']);
   }
 }
