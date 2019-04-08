@@ -22,6 +22,7 @@ export class UserService {
   private _send = new Subject<string>();
   private _roles = new Subject<string>();
   private _userDisconnect = new Subject<void>();
+  private _roomRoles = new Subject<void>();
   public roles = this._roles.asObservable();
   public cleared = this._cleared.asObservable();
   public changed = this._changed.asObservable();
@@ -32,6 +33,8 @@ export class UserService {
   public voted = this._voted.asObservable();
   public disconnected = this._disconnected.asObservable();
   public finishVoting = this._finishVoting.asObservable();
+  public roomRoles = this._roomRoles.asObservable();
+
   private _hubConnection: signalR.HubConnection | undefined;
   constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
     this._baseUrl = baseUrl;
@@ -75,6 +78,9 @@ export class UserService {
     });
     this._hubConnection.on('UserDisconnect', () => {
       this._userDisconnect.next();
+    });
+    this._hubConnection.on('GetRolesForRoom', () => {
+      this._roomRoles.next();
     });
   }
 
@@ -125,22 +131,20 @@ export class UserService {
   }
 
   addRoom(room: Room) {
-    if (this._hubConnection) {
-      this._hubConnection.invoke('AddRoom', room);
-    }
+    const user = localStorage.getItem('UserName');
+    room.CreatorId = user;
+    this.http.post(this._baseUrl + 'api/Rooms', room).subscribe();
   }
   getRooms() {
     return this.http.get<Room[]>(this._baseUrl + 'api/Rooms');
   }
   getRoles(id: string) {
     if (this._hubConnection) {
-      this._hubConnection.invoke('GetRoles', id);
+      this._hubConnection.invoke('GetRole', id);
     }
   }
   deleteRoom(id: string) {
-    if (this._hubConnection) {
-      this._hubConnection.invoke('DeleteRoom', id);
-    }
+    return this.http.delete(this._baseUrl + 'api/Rooms/' + id).subscribe();
   }
 
   addUserVote(userName: string, vote: number) {
@@ -154,6 +158,9 @@ export class UserService {
     if (this._hubConnection) {
       this._hubConnection.invoke('UserDisconnected');
     }
+  }
+  getRolesForRoom(users: string[], id) {
+    return this.http.post(this._baseUrl + 'api/Rooms/' + id + '/Roles', users);
   }
 }
 

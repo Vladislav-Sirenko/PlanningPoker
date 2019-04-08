@@ -21,6 +21,16 @@ namespace PlanningPoker.Controllers
         [HttpGet]
         public List<Room> Get() => _userService.GetRooms();
 
+         [HttpPost]
+         public void Post([FromBody]Room room)
+         {
+             room.CreatorId = _userService.GetConnectionByUserName(room.CreatorId);
+            _userService.AddRoom(room);
+        }
+
+        [HttpDelete("{id}")]
+         public void Delete(string id) => _userService.DeleteRoom(id);
+
         [HttpGet("{id}/users")]
         public List<string> GetUsersByRoom(string id) => _userService.GetUsersByRoom(id);
 
@@ -32,5 +42,8 @@ namespace PlanningPoker.Controllers
 
         [HttpPost("[action]")]
         public void UserVote([FromBody] UserVote userVote) => _userService.AddVote(userVote);
+
+        [HttpPost("{id}/Roles")]
+        public IEnumerable<string> GetRolesList([FromBody] string[] users, string id) => _userService.GetRoles(users, id);
     }
 }

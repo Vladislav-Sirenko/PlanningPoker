@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PlanningPoker.Models;
 using Serilog;
@@ -15,19 +16,20 @@ namespace PlanningPoker.Services
         private readonly List<UserConnection> userRooms;
         private List<UserVote> _usersVotes;
         private List<UserConnection> _userConnections;
+        private readonly IHubContext<LoopyHub> _hubContext;
 
-        public UserService()
+        public UserService(IHubContext<LoopyHub> hubContext)
         {
             _rooms = new List<Room>();
             _usersVotes = new List<UserVote>();
             _userConnections = new List<UserConnection>();
             userRooms = new List<UserConnection>();
-
+            _hubContext = hubContext;
         }
 
         public void AddVote(UserVote userVote)
         {
-            Log.Information("User:"+userVote.UserName + " voted "+userVote.Vote);
+            Log.Information("User:" + userVote.UserName + " voted " + userVote.Vote);
             _usersVotes.Add(new UserVote() { UserName = userVote.UserName, Vote = userVote.Vote });
         }
         public Dictionary<string, int> GetVotesForRoom(string id)
@@ -47,6 +49,19 @@ namespace PlanningPoker.Services
             if (userId == room.CreatorId)
                 return "Admin";
             return "Guest";
+        }
+
+        public IEnumerable<string> GetRoles(string[] users, string id)
+        {
+            var group = GetRoomName(GetConnectionByUserName(users[0]));
+            List<string> roles = new List<string>();
+            foreach (var user in users)
+            {
+                roles.Add(GetRoleForRoom(GetConnectionByUserName(user), id));
+            }
+            _hubContext.Clients.Group(group).SendAsync("GetRolesForRoom");
+            return roles;
+
         }
 
         public void ResetVote(string id)
@@ -77,12 +92,12 @@ namespace PlanningPoker.Services
                 var removedUserConnection = _userConnections.First(x => x.ConnectionId == id);
                 _userConnections.Remove(removedUserConnection);
                 var removedUser = userRooms.First(x => x.ConnectionId == id);
-                if(removedUser != null)
-                userRooms.Remove(removedUser);
+                if (removedUser != null)
+                    userRooms.Remove(removedUser);
 
                 Log.Information(removedUserConnection.Name + "successfully removed from local database");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Information("Disconnected user doesn`t exists in local database" + ex.Data);
             }
@@ -96,18 +111,22 @@ namespace PlanningPoker.Services
             var name = _userConnections.First(x => x.ConnectionId == id).Name;
             return name;
         }
-        public void AddRoom(Room room, string id)
+        public string GetConnectionByUserName(string name)
         {
-            room.CreatorId = id;
+            var id = _userConnections.First(x => x.Name == name).ConnectionId;
+            return id;
+        }
+        public void AddRoom(Room room)
+        {
             _rooms.Add(room);
-            Log.Information("User:" + GetUserByConnection(id) + " added room:" + room.name);
+            _hubContext.Clients.All.SendAsync("AddRoom");
 
         }
         public void DeleteRoom(string id)
         {
             var remroom = _rooms.First(x => x.id == id);
             _rooms.Remove(remroom);
-            Log.Information(remroom.name + "has been deleted");
+            _hubContext.Clients.All.SendAsync("DeleteRoom");
         }
         public List<Room> GetRooms()
         {

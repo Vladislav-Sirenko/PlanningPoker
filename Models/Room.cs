@@ -12,3 +12,4 @@ namespace PlanningPoker.Models
         public string CreatorId { get; set; }
     }
 }
+    

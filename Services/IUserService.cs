@@ -13,7 +13,8 @@ namespace PlanningPoker.Services
         void DeleteUser(string id);
         void AddUserConnection(string id, string name);
         string GetUserByConnection(string id);
-        void AddRoom(Room room,string id);
+        string GetConnectionByUserName(string name);
+        void AddRoom(Room room);
         void DeleteRoom(string id);
         List<Room> GetRooms();
         void AddUserToGroup(UserConnection userConnection);
@@ -22,5 +23,6 @@ namespace PlanningPoker.Services
         Dictionary<string, int> GetVotesForRoom(string id);
 
         string GetRoleForRoom(string userId,string roomId);
+        IEnumerable<string> GetRoles(string[] users, string id);
     }
 }

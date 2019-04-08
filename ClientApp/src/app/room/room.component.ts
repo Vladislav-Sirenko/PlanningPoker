@@ -1,9 +1,7 @@
 import { Component, OnInit, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { Cards } from '../cardMock';
 import { UserService } from '../user.service';
-import { Subject } from 'rxjs/Subject';
 import { UserVote } from '../userVote.model';
-import { TouchSequence } from 'selenium-webdriver';
 import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-room',
@@ -22,6 +20,7 @@ export class RoomComponent implements OnInit {
   role: string;
   public users: string[] = [];
   id: string;
+  roles: string[] = [];
   ngOnInit(): void {
     this.votesCount = 0;
     this.userService.getRoles(this.id);
@@ -34,6 +33,13 @@ export class RoomComponent implements OnInit {
       for (const user in users) {
         this.users.push(users[user]);
       }
+      this.userService.getRolesForRoom(this.users, this.id).subscribe((roles) => {
+        for (const role in roles) {
+          if (role) {
+            this.roles.push(roles[role]);
+          }
+        }
+      });
     });
     this.userService.finishVoting
       .subscribe(() => {
@@ -73,6 +79,14 @@ export class RoomComponent implements OnInit {
             for (const user in users) {
               this.users.push(users[user]);
             }
+            this.userService.getRolesForRoom(this.users, this.id).subscribe((roles) => {
+              this.roles = [];
+              for (const role in roles) {
+                if (role) {
+                  this.roles.push(roles[role]);
+                }
+              }
+            });
           });
         });
     this.userService.disconnected
@@ -86,6 +100,14 @@ export class RoomComponent implements OnInit {
             for (const user in users) {
               this.users.push(users[user]);
             }
+            this.userService.getRolesForRoom(this.users, this.id).subscribe((roles) => {
+              this.roles = [];
+              for (const role in roles) {
+                if (role) {
+                  this.roles.push(roles[role]);
+                }
+              }
+            });
           });
         });
     this.userService.voted.subscribe((name) => {
@@ -107,7 +129,6 @@ export class RoomComponent implements OnInit {
             this.Votes[user] = 'No';
         }
       }
-
     });
   }
 

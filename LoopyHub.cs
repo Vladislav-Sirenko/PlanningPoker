@@ -18,25 +18,10 @@ namespace PlanningPoker
             _userService = userService;
         }
 
-        public Task AddRoom([FromBody] Room room)
-        {
-            Log.Information("User:" + _userService.GetUserByConnection(Context.ConnectionId) + " trying to add room:" + room.name);
-            _userService.AddRoom(room, Context.ConnectionId);
-            return Clients.All.SendAsync("AddRoom");
-        }
-
-        public Task DeleteRoom(string id)
-        {
-            Log.Information("User:" + _userService.GetUserByConnection(Context.ConnectionId) + " trying to delete room:" + id);
-            _userService.DeleteRoom(id);
-            return Clients.All.SendAsync("DeleteRoom");
-        }
-
         public Task Join(string id)
         {
             _userService.AddUserToGroup(new UserConnection() { Name = id, ConnectionId = Context.ConnectionId });
             Groups.AddToGroupAsync(Context.ConnectionId, id);
-            Log.Information("User:"+_userService.GetUserByConnection(Context.ConnectionId) +" joined room:"+id);
             var group = _userService.GetRoomName(Context.ConnectionId);
             return Clients.Group(group).SendAsync("Join");
         }
@@ -99,9 +84,8 @@ namespace PlanningPoker
             return Clients.Caller.SendAsync("UserDisconnect");
         }
 
-        public Task GetRoles(string id)
+        public Task GetRole(string id)
         {
-            var group = _userService.GetRoomName(Context.ConnectionId);
             var role = _userService.GetRoleForRoom(Context.ConnectionId, id);
             return Clients.Caller.SendAsync("GetRoles", role);
         }
