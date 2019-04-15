@@ -49,7 +49,6 @@ export class RoomsComponent implements OnInit {
     return window.location.href.includes('/room');
   }
   logOut() {
-    const userName = localStorage.removeItem('UserName');
     this.userService.logOut();
     this.roouter.navigate(['']);
   }

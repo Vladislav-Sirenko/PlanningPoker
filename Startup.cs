@@ -1,4 +1,6 @@
 using System;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
 using Serilog;
@@ -10,6 +12,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PlanningPoker.Context;
 using PlanningPoker.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -33,15 +36,16 @@ namespace PlanningPoker
                 {
                     options.Conventions.AuthorizePage("/SecurePage");
                 });
-           // services.AddDbContext<PokerContext>(options =>
-             //    options.UseSqlServer(Configuration.GetConnectionString("PlanningPokerDatabase")));
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info {Title = "My API", Version = "v1"});
             });
+         //   services.AddSingleton<Func<string, DbConnection>>(provider => connStr => new SqlConnection(connStr));
             services.AddSingleton<IUserService, UserService>();
+            services.AddDbContext<PokerContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("PlanningPokerDatabase")));
             // In production, the Angular files will be served from this directory
             services.AddSignalR();
             services.AddSpaStaticFiles(configuration =>

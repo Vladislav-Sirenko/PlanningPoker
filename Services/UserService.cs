@@ -13,7 +13,7 @@ namespace PlanningPoker.Services
     public class UserService : IUserService
     {
         private readonly List<Room> _rooms;
-        private readonly List<UserConnection> userRooms;
+        private readonly List<UserRoom> userRooms;
         private List<UserVote> _usersVotes;
         private List<UserConnection> _userConnections;
         private readonly IHubContext<LoopyHub> _hubContext;
@@ -23,7 +23,7 @@ namespace PlanningPoker.Services
             _rooms = new List<Room>();
             _usersVotes = new List<UserVote>();
             _userConnections = new List<UserConnection>();
-            userRooms = new List<UserConnection>();
+            userRooms = new List<UserRoom>();
             _hubContext = hubContext;
         }
 
@@ -133,7 +133,7 @@ namespace PlanningPoker.Services
             return _rooms;
         }
 
-        public void AddUserToGroup(UserConnection userConnection)
+        public void AddUserToGroup(UserRoom userConnection)
         {
             userRooms.Add(userConnection);
         }

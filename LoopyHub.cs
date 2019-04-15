@@ -18,10 +18,10 @@ namespace PlanningPoker
             _userService = userService;
         }
 
-        public Task Join(string id)
+        public Task Join(string roomName)
         {
-            _userService.AddUserToGroup(new UserConnection() { Name = id, ConnectionId = Context.ConnectionId });
-            Groups.AddToGroupAsync(Context.ConnectionId, id);
+            _userService.AddUserToGroup(new UserRoom() { Name = roomName, ConnectionId = Context.ConnectionId });
+            Groups.AddToGroupAsync(Context.ConnectionId, roomName);
             var group = _userService.GetRoomName(Context.ConnectionId);
             return Clients.Group(group).SendAsync("Join");
         }

@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using PlanningPoker.Context;
 using PlanningPoker.Models;
 using PlanningPoker.Services;
+using Serilog;
 
 namespace PlanningPoker.Controllers
 {
@@ -16,26 +18,53 @@ namespace PlanningPoker.Controllers
     {
         private readonly IUserService _userService;
 
-        public RoomsController(IUserService userService) => _userService = userService;
+        public RoomsController(IUserService userService)
+        {
+            _userService = userService;
+        }
 
         [HttpGet]
-        public List<Room> Get() => _userService.GetRooms();
+        public ActionResult Get()
+        {
+            var rooms = _userService.GetRooms();
+            return Ok(rooms);
+        }
 
-         [HttpPost]
-         public void Post([FromBody]Room room)
-         {
-             room.CreatorId = _userService.GetConnectionByUserName(room.CreatorId);
-            _userService.AddRoom(room);
+        [HttpPost]
+        public ActionResult Post([FromBody] Room room)
+        {
+            if (room != null)
+            {
+                room.CreatorId = _userService.GetConnectionByUserName(room.CreatorId);
+                _userService.AddRoom(room);
+                return Ok();
+            }
+            return BadRequest();
         }
 
         [HttpDelete("{id}")]
-         public void Delete(string id) => _userService.DeleteRoom(id);
+        public ActionResult Delete(string id)
+        {
+            if (id != null)
+            {
+                _userService.DeleteRoom(id);
+                return Ok();
+            }
+            return BadRequest();
+        }
 
         [HttpGet("{id}/users")]
-        public List<string> GetUsersByRoom(string id) => _userService.GetUsersByRoom(id);
+        public ActionResult GetUsersByRoom(string id)
+        {
+            if (id != null)
+            {
+                return Ok(_userService.GetUsersByRoom(id));
+            }
+            return  BadRequest();
+        }
 
         [HttpGet("{id}/Votes")]
-        public Dictionary<string, int> GetVotesByRoom(string id) => _userService.GetVotesForRoom(id);
+        public ActionResult GetVotesByRoom(string id) => Ok(_userService.GetVotesForRoom(id));
 
         [HttpPost("{id}/ResetVotes")]
         public void ResetVotesByRoom(string id) => _userService.ResetVote(id);
