@@ -1,0 +1,14 @@
+{
+  "ProjectFilePath": "c:\\Users\\Vladyslav_Sirenko2\\Desktop\\Poker\\PlanningPoker.Tests\\PlanningPoker.Tests.csproj",
+  "TargetFramework": "netcoreapp2.1",
+  "TagHelpers": [],
+  "Configuration": {
+    "ConfigurationName": "UnsupportedRazor",
+    "LanguageVersion": "1.0",
+    "Extensions": [
+      {
+        "ExtensionName": "UnsupportedRazorExtension"
+      }
+    ]
+  }
+}

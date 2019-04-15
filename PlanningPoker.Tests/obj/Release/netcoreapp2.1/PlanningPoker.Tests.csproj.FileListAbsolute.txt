@@ -1,0 +1,17 @@
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\bin\Release\netcoreapp2.1\xunit.runner.visualstudio.dotnetcore.testadapter.dll
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\bin\Release\netcoreapp2.1\xunit.runner.reporters.netcoreapp10.dll
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\bin\Release\netcoreapp2.1\xunit.runner.utility.netcoreapp10.dll
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\bin\Release\netcoreapp2.1\PlanningPoker.Tests.deps.json
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\bin\Release\netcoreapp2.1\PlanningPoker.Tests.runtimeconfig.json
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\bin\Release\netcoreapp2.1\PlanningPoker.Tests.runtimeconfig.dev.json
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\bin\Release\netcoreapp2.1\PlanningPoker.Tests.dll
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\obj\Release\netcoreapp2.1\PlanningPoker.Tests.csprojAssemblyReference.cache
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\obj\Release\netcoreapp2.1\PlanningPoker.Tests.csproj.CoreCompileInputs.cache
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\obj\Release\netcoreapp2.1\PlanningPoker.Tests.AssemblyInfoInputs.cache
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\obj\Release\netcoreapp2.1\PlanningPoker.Tests.AssemblyInfo.cs
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\bin\Release\netcoreapp2.1\PlanningPoker.dll
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\bin\Release\netcoreapp2.1\PlanningPoker.pdb
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\obj\Release\netcoreapp2.1\PlanningPoker.Tests.csproj.CopyComplete
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\bin\Release\netcoreapp2.1\PlanningPoker.Tests.pdb
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\obj\Release\netcoreapp2.1\PlanningPoker.Tests.dll
+C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker.Tests\obj\Release\netcoreapp2.1\PlanningPoker.Tests.pdb

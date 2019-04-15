@@ -38,6 +38,7 @@ namespace PlanningPoker.Services
             Dictionary<string, int> votes = new Dictionary<string, int>();
             foreach (var user in users)
             {
+                if(_usersVotes.Exists(x=>x.UserName==user))
                 votes.Add(user, _usersVotes.First(x => x.UserName == user).Vote);
             }
             return votes;
