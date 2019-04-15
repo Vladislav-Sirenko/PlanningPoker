@@ -1,0 +1,18 @@
+.header {
+    float: left;
+}
+
+.footer {
+float: right;
+}
+
+#card {
+    min-width:10rem ;
+}
+div {
+    position: relative;    
+    background-color: ghostwhite;
+}
+h1{
+    text-align:center;
+}

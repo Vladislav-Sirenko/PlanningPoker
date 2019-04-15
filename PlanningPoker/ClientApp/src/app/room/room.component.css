@@ -1,0 +1,18 @@
+
+
+#message{
+    float: left;
+}
+
+#user { 
+    cursor: pointer;
+}
+
+#messagebox{
+    height:200px auto; 
+    
+}
+p {
+    float: left;
+    padding-left: 10px;
+}

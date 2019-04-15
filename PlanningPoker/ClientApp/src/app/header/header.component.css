@@ -1,0 +1,10 @@
+.header {
+    background-color:black;
+    height: 100px;
+    color: aliceblue;
+}
+.user-name {
+        float: right;
+        text-align: center;
+        margin-right: 10px;
+}
