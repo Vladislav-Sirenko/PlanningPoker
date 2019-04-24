@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlanningPoker.Context;
+using PlanningPoker.Repostitories;
 using PlanningPoker.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -43,7 +44,10 @@ namespace PlanningPoker
                 c.SwaggerDoc("v1", new Info {Title = "My API", Version = "v1"});
             });
          //   services.AddSingleton<Func<string, DbConnection>>(provider => connStr => new SqlConnection(connStr));
-            services.AddSingleton<IUserService, UserService>();
+
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRoomsRepository, RoomRepository>();
+            services.AddScoped<IUserRepository,UserRepository>();
             services.AddDbContext<PokerContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("PlanningPokerDatabase")));
             // In production, the Angular files will be served from this directory

@@ -22,7 +22,7 @@ namespace PlanningPoker.Tests
         public async Task Post_Rooms()
         {
             var client = Factory.CreateClient();
-            var room = new Room() {id = "1", CreatorId = "2", name = "Room"};
+            var room = new Room() {Id = "1", CreatorName = "2", Name = "Room"};
             string serializedObject = JsonConvert.SerializeObject(room);
             var content = new StringContent(serializedObject);
             await client.PostAsync("api/Rooms", content);
@@ -33,7 +33,7 @@ namespace PlanningPoker.Tests
         public async Task Get_Users_For_Room_Where_Nothing_Exist()
         {
             var client = Factory.CreateClient();
-            var room = new Room() { id = "1", CreatorId = "2", name = "Room" };
+            var room = new Room() { Id = "1", CreatorName = "2", Name = "Room" };
             string serializedObject = JsonConvert.SerializeObject(room);
             var content = new StringContent(serializedObject);
             await client.PostAsync("api/Rooms", content);

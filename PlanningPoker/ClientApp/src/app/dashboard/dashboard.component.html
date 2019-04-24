@@ -11,6 +11,11 @@
               #password="ngModel" required />
       </div>
       <div class="form-group">
+        <label for="password">Email</label>
+        <input type="text" class="form-control" name="email" [(ngModel)]="Email" [ngModelOptions]="{standalone: true}"
+            #email="ngModel" required />
+    </div>
+      <div class="form-group">
           <button [disabled]="loading" (click)="addUser()" type="submit" class="btn btn-primary">Login</button>
       </div>
   </form>

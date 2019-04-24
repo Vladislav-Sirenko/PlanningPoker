@@ -18,27 +18,27 @@ namespace PlanningPoker.Controllers
     {
         private readonly IUserService _userService;
 
-        public RoomsController(IUserService userService)
+        public RoomsController(IUserService userService, PokerContext context)
         {
             _userService = userService;
         }
 
         [HttpGet]
-        public ActionResult Get()
+        public async Task<ActionResult> Get()
         {
-            var rooms = _userService.GetRooms();
+            var rooms = await _userService.GetRooms();
             return Ok(rooms);
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] Room room)
+        public async Task<ActionResult> Post([FromBody] Room room)
         {
             if (room != null)
             {
-                room.CreatorId = _userService.GetConnectionByUserName(room.CreatorId);
-                _userService.AddRoom(room);
+                await _userService.AddRoom(room);
                 return Ok();
             }
+
             return BadRequest();
         }
 
@@ -60,19 +60,28 @@ namespace PlanningPoker.Controllers
             {
                 return Ok(_userService.GetUsersByRoom(id));
             }
-            return  BadRequest();
+            return BadRequest();
         }
 
-        [HttpGet("{id}/Votes")]
-        public ActionResult GetVotesByRoom(string id) => Ok(_userService.GetVotesForRoom(id));
+        [HttpPost("{id}/Votes")]
+        public void GetVotesByRoom(string id) => _userService.GetVotesForRoom(id);
 
         [HttpPost("{id}/ResetVotes")]
         public void ResetVotesByRoom(string id) => _userService.ResetVote(id);
 
-        [HttpPost("[action]")]
-        public void UserVote([FromBody] UserVote userVote) => _userService.AddVote(userVote);
+        [HttpPost("{id}/UserVote")]
+        public void UserVote([FromRoute] string id, [FromBody] int vote) => _userService.AddVote(id, vote);
 
         [HttpPost("{id}/Roles")]
         public IEnumerable<string> GetRolesList([FromBody] string[] users, string id) => _userService.GetRoles(users, id);
+
+        [HttpPost("[action]")]
+        public void AddUser([FromBody] User user) => _userService.AddUser(user);
+
+        [HttpPost("[action]")]
+        public void DeleteUserFromRoom(string user)
+        {
+            _userService.DeleteUserFromRoom(user);
+        }
     }
 }

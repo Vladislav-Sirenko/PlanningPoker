@@ -8,21 +8,22 @@ namespace PlanningPoker.Services
 {
     public interface IUserService
     {
-        void AddVote(UserVote userVote);
+        void AddVote(string name, int vote);
         void ResetVote(string name);
-        void DeleteUser(string id);
-        void AddUserConnection(string id, string name);
-        string GetUserByConnection(string id);
-        string GetConnectionByUserName(string name);
-        void AddRoom(Room room);
+    //    void DeleteUser(string id);
+        User AddUserConnection(string id, string roomId, string userName);
+        Task<Room> AddRoom(Room room);
         void DeleteRoom(string id);
-        List<Room> GetRooms();
-        void AddUserToGroup(UserRoom userConnection);
-        string GetRoomName(string id);
-        List<string> GetUsersByRoom(string id);
-        Dictionary<string, int> GetVotesForRoom(string id);
+        Task<List<Room>> GetRooms();
+        //   void AddUserToGroup(string connectionId, string roomName);
+        List<User> GetUsersByRoom(string id);
+        void GetVotesForRoom(string id);
 
-        string GetRoleForRoom(string userId,string roomId);
+        string GetRoleForRoom(string userId, string roomId);
         IEnumerable<string> GetRoles(string[] users, string id);
+        string GetRoomByUserName(string userName);
+        User AddUser(User user);
+        User GetUserByConnectionId(string id);
+        void DeleteUserFromRoom(string userName);
     }
 }

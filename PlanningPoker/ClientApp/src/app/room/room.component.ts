@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Inject, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { Cards } from '../cardMock';
 import { UserService } from '../user.service';
 import { UserVote } from '../userVote.model';
@@ -21,37 +21,61 @@ export class RoomComponent implements OnInit {
   public users: string[] = [];
   id: string;
   roles: string[] = [];
+  @HostListener('window:beforeunload') goToPage() {
+    this.userService.deleteUserFromRoom();
+    sessionStorage.setItem('Unload', '1');
+  }
   ngOnInit(): void {
+    if (sessionStorage.getItem('Unload')) {
+      this.router.navigate(['']);
+      sessionStorage.removeItem('Unload');
+    }
     this.votesCount = 0;
-    this.userService.getRoles(this.id);
-    this.userService.roles.subscribe((role) => {
-      this.role = role;
-    });
-    this.userService.getUsers(this.id).subscribe(users => {
-      this.users = [];
-      // tslint:disable-next-line:forin
-      for (const user in users) {
-        this.users.push(users[user]);
-      }
-      this.userService.getRolesForRoom(this.users, this.id).subscribe((roles) => {
-        for (const role in roles) {
-          if (role) {
-            this.roles.push(roles[role]);
+    this.userService.join
+      .subscribe(
+        () => {
+          this.userService.getUsers(this.id).subscribe(users => {
+            this.users = [];
+            // tslint:disable-next-line:forin
+            for (const user in users) {
+              this.users.push(users[user]['name']);
+            }
+            this.userService.getRolesForRoom(this.users, this.id).subscribe((roles) => {
+              this.roles = [];
+              // tslint:disable-next-line:forin
+              for (const role in roles) {
+                if (role) {
+                  this.roles.push(roles[role]);
+                }
+              }
+              this.role = this.roles[this.users.indexOf(sessionStorage.getItem('UserName'))];
+            });
+          });
+        });
+
+    // this.userService.getUsers(this.id).subscribe(users => {
+    //   this.users = [];
+    //   // tslint:disable-next-line:forin
+    //   for (const user in users) {
+    //     this.users.push(users[user]);
+    //   }
+    //   this.userService.getRolesForRoom(this.users, this.id).subscribe((roles) => {
+    //     for (const role in roles) {
+    //       if (role) {
+    //         this.roles.push(roles[role]);
+    //       }
+    //     }
+    //   });
+    // });
+    this.userService.finishVoting
+      .subscribe(result => {
+        this.userVote = [];
+        for (const user in result) {
+          if (user) {
+            const index = this.users.indexOf(user);
+            this.userVote[index] = result[user];
           }
         }
-      });
-    });
-    this.userService.finishVoting
-      .subscribe(() => {
-        this.userService.getUserVote(this.id).subscribe(result => {
-          this.userVote = [];
-          for (const user in result) {
-            if (user) {
-              const index = this.users.indexOf(user);
-              this.userVote[index] = result[user];
-            }
-          }
-        }, error => console.error(error));
         console.log(this.userVote);
       });
     this.userService.cleared
@@ -60,33 +84,14 @@ export class RoomComponent implements OnInit {
           this.Votes = [];
           this.userVote = [];
           this.votesCount = 0;
-          localStorage.removeItem('UserVote');
+          sessionStorage.removeItem('UserVote');
           this.users = [];
           this.userService.getUsers(this.id).subscribe(users => {
             this.users = [];
             // tslint:disable-next-line:forin
             for (const user in users) {
-              this.users.push(users[user]);
+              this.users.push(users[user]['name']);
             }
-          });
-        });
-    this.userService.join
-      .subscribe(
-        () => {
-          this.userService.getUsers(this.id).subscribe(users => {
-            this.users = [];
-            // tslint:disable-next-line:forin
-            for (const user in users) {
-              this.users.push(users[user]);
-            }
-            this.userService.getRolesForRoom(this.users, this.id).subscribe((roles) => {
-              this.roles = [];
-              for (const role in roles) {
-                if (role) {
-                  this.roles.push(roles[role]);
-                }
-              }
-            });
           });
         });
     this.userService.disconnected
@@ -98,7 +103,7 @@ export class RoomComponent implements OnInit {
             this.users = [];
             // tslint:disable-next-line:forin
             for (const user in users) {
-              this.users.push(users[user]);
+              this.users.push(users[user]['name']);
             }
             this.userService.getRolesForRoom(this.users, this.id).subscribe((roles) => {
               this.roles = [];
@@ -116,7 +121,7 @@ export class RoomComponent implements OnInit {
         this.votesCount++;
         // tslint:disable-next-line:forin
         for (const user in users) {
-          this.users.push(users[user]);
+          this.users.push(users[user]['name']);
         }
       });
       const index = this.users.indexOf(name.split(' ')[0]);
@@ -134,23 +139,21 @@ export class RoomComponent implements OnInit {
 
 
   onChanged(number: number) {
-    const userName = localStorage.getItem('UserName');
-    localStorage.setItem('UserVote', number.toString());
-    this.userService.addUserVote(userName, number);
+    sessionStorage.setItem('UserVote', number.toString());
+    this.userService.addUserVote(number);
   }
 
   getVotes() {
-    this.userService.finishVote();
+    this.userService.getUserVote(this.id);
   }
 
   resetVotes() {
-    localStorage.removeItem('UserVote');
+    sessionStorage.removeItem('UserVote');
     this.userService.resetUserVotes(this.id);
   }
 
   logOut() {
-    const userName = localStorage.getItem('UserName');
-    this.userService.deleteUser(userName);
+    sessionStorage.removeItem('UserName');
     this.router.navigate(['']);
   }
 
@@ -161,17 +164,10 @@ export class RoomComponent implements OnInit {
     return false;
   }
 
-  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute) {
+  constructor(private userService: UserService, public router: Router, private route: ActivatedRoute) {
     this.route.queryParams.subscribe(params => {
       this.name = params['name'];
       this.id = params['id'];
-    });
-
-    this.userService.getUsers(this.id).subscribe(users => {
-      // tslint:disable-next-line:forin
-      for (const user in users) {
-        this.users.push(users[user]);
-      }
     });
   }
 }

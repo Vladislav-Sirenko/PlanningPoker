@@ -42,14 +42,15 @@ export class RoomsComponent implements OnInit {
     this.userService.deleteRoom(id);
   }
   joinRoom(id: string, name: string) {
-    this.userService.addUserToRoom(name);
+    // tslint:disable-next-line:quotemark
+    this.userService.addUserToRoom(id, sessionStorage.getItem("UserName"));
     this.roouter.navigate(['room', id], { queryParams: { id: id, name: name } });
   }
   inRoom(): boolean {
     return window.location.href.includes('/room');
   }
   logOut() {
-    this.userService.logOut();
+   // this.userService.logOut();
     this.roouter.navigate(['']);
   }
 }

@@ -13,13 +13,14 @@ export class DashboardComponent implements OnInit {
 
   userName: string;
   userPassword: string;
+  Email: string;
 
   // tslint:disable-next-line:no-output-on-prefix
   @Output() onChanged = new EventEmitter<string>();
   user: User;
 
   addUser() {
-    this.user = new User(this.userName, this.userPassword);
+    this.user = new User(this.userName, this.userPassword, this.Email);
     this.userService.addUser(this.user);
     this.onChanged.emit(this.user.Name);
   }

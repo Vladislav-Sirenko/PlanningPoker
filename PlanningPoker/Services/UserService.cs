@@ -5,156 +5,164 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using PlanningPoker.Context;
 using PlanningPoker.Models;
+using PlanningPoker.Repostitories;
 using Serilog;
 
 namespace PlanningPoker.Services
 {
     public class UserService : IUserService
     {
-        private readonly List<Room> _rooms;
-        private readonly List<UserRoom> userRooms;
-        private List<UserVote> _usersVotes;
-        private List<UserConnection> _userConnections;
         private readonly IHubContext<LoopyHub> _hubContext;
+        private readonly IRoomsRepository _roomsRepository;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(IHubContext<LoopyHub> hubContext)
+        public UserService(IHubContext<LoopyHub> hubContext, IRoomsRepository repository, IUserRepository userRepository)
         {
-            _rooms = new List<Room>();
-            _usersVotes = new List<UserVote>();
-            _userConnections = new List<UserConnection>();
-            userRooms = new List<UserRoom>();
             _hubContext = hubContext;
+            _roomsRepository = repository;
+            _userRepository = userRepository;
         }
 
-        public void AddVote(UserVote userVote)
+        public async void AddVote(string name, int vote)
         {
-            Log.Information("User:" + userVote.UserName + " voted " + userVote.Vote);
-            _usersVotes.Add(new UserVote() { UserName = userVote.UserName, Vote = userVote.Vote });
+            var user = _userRepository.GetByNameAsync(name);
+            user.Vote = vote;
+            _userRepository.UpdateAsync(user);
+            var room = _roomsRepository.GetByIdAsync(user.RoomId);
+            await _hubContext.Clients.Group(room.Id).SendAsync("Vote", user.Name);
         }
-        public Dictionary<string, int> GetVotesForRoom(string id)
+
+        public List<User> GetUsersByRoom(string id)
         {
-            var users = GetUsersByRoom(id);
+            return _userRepository.GetUsersByRoomId(id).ToList();
+        }
+
+        public void GetVotesForRoom(string id)
+        {
+            if (id == null)
+                return;
+            var room = _roomsRepository.GetByIdAsync(id);
+            var users = _userRepository.GetUsersByRoomId(id);
             Dictionary<string, int> votes = new Dictionary<string, int>();
             foreach (var user in users)
             {
-                if(_usersVotes.Exists(x=>x.UserName==user))
-                votes.Add(user, _usersVotes.First(x => x.UserName == user).Vote);
+                if (user.Vote != null) votes.Add(user.Name, user.Vote.Value);
             }
-            return votes;
+            _hubContext.Clients.Group(room.Id).SendAsync("GetVotes", votes);
         }
 
-        public string GetRoleForRoom(string userId, string roomId)
+        public string GetRoleForRoom(string userName, string id)
         {
-            var room = _rooms.First(x => x.id == roomId);
-            if (userId == room.CreatorId)
+            var room = _roomsRepository.GetByIdAsync(id);
+            if (userName == room.CreatorName)
                 return "Admin";
             return "Guest";
         }
 
         public IEnumerable<string> GetRoles(string[] users, string id)
         {
-            var group = GetRoomName(GetConnectionByUserName(users[0]));
+
             List<string> roles = new List<string>();
             foreach (var user in users)
             {
-                roles.Add(GetRoleForRoom(GetConnectionByUserName(user), id));
+                roles.Add(GetRoleForRoom(user, id));
             }
-            _hubContext.Clients.Group(group).SendAsync("GetRolesForRoom");
+            _hubContext.Clients.Group(id).SendAsync("GetRolesForRoom");
             return roles;
 
         }
 
         public void ResetVote(string id)
         {
-            var userlist = GetUsersByRoom(id);
-            var removedUserVotes = new List<UserVote>();
-            foreach (var uservote in _usersVotes)
+            var userlist = _userRepository.GetUsersByRoomId(id).ToList();
+            foreach (var user in userlist)
             {
-                foreach (var user in userlist)
-                {
-                    if (user == uservote.UserName)
-                    {
-                        removedUserVotes.Add(uservote);
-                    }
-                }
+                user.Vote = null;
             }
-            foreach (var userVote in removedUserVotes)
-            {
-                _usersVotes.Remove(userVote);
-            }
+            _userRepository.UpdateRangeAsync(userlist);
+            _hubContext.Clients.Group(id).SendAsync("ResetVotes");
         }
 
 
-        public void DeleteUser(string id)
-        {
-            try
-            {
-                var removedUserConnection = _userConnections.First(x => x.ConnectionId == id);
-                _userConnections.Remove(removedUserConnection);
-                var removedUser = userRooms.First(x => x.ConnectionId == id);
-                if (removedUser != null)
-                    userRooms.Remove(removedUser);
+        //public void DeleteUser(string id)
+        //{
+        //    try
+        //    {
+        //        var removedUserConnection = _userConnections.First(x => x.ConnectionId == id);
+        //        _userConnections.Remove(removedUserConnection);
+        //        var removedUser = _userRooms.First(x => x.ConnectionId == id);
+        //        if (removedUser != null)
+        //            _userRooms.Remove(removedUser);
 
-                Log.Information(removedUserConnection.Name + "successfully removed from local database");
-            }
-            catch (Exception ex)
-            {
-                Log.Information("Disconnected user doesn`t exists in local database" + ex.Data);
-            }
-        }
-        public void AddUserConnection(string id, string name)
-        {
-            _userConnections.Add(new UserConnection() { Name = name, ConnectionId = id });
-        }
-        public string GetUserByConnection(string id)
-        {
-            var name = _userConnections.First(x => x.ConnectionId == id).Name;
-            return name;
-        }
-        public string GetConnectionByUserName(string name)
-        {
-            var id = _userConnections.First(x => x.Name == name).ConnectionId;
-            return id;
-        }
-        public void AddRoom(Room room)
-        {
-            _rooms.Add(room);
-            _hubContext.Clients.All.SendAsync("AddRoom");
+        //        Log.Information(removedUserConnection.Name + "successfully removed from local database");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Information("Disconnected user doesn`t exists in local database" + ex.Data);
+        //    }
+        //}
 
+        public User AddUserConnection(string id, string roomId, string userName)
+        {
+            var user = _userRepository.GetByNameAsync(userName);
+            user.ConnectionId = id;
+            user.RoomId = roomId;
+            _userRepository.UpdateAsync(user);
+            return user;
+        }
+        //public string GetUserByConnection(string id)
+        //{
+        //    var name = _userConnections.First(x => x.ConnectionId == id).Name;
+        //    return name;
+        //}
+        //public string GetConnectionByUserName(string name)
+        //{
+        //    var id = _userConnections.First(x => x.Name == name).ConnectionId;
+        //    return id;
+        //}
+        public async Task<Room> AddRoom(Room room)
+        {
+            var entity = await _roomsRepository.AddAsync(room);
+            await _hubContext.Clients.All.SendAsync("AddRoom");
+            return entity;
         }
         public void DeleteRoom(string id)
         {
-            var remroom = _rooms.First(x => x.id == id);
-            _rooms.Remove(remroom);
+            var users = _userRepository.GetUsersByRoomId(id);
+            foreach (var user in users)
+            {
+                user.RoomId = null;
+            }
+            _userRepository.UpdateRangeAsync(users.ToList());
+            _roomsRepository.DeleteAsync(id);
             _hubContext.Clients.All.SendAsync("DeleteRoom");
         }
-        public List<Room> GetRooms()
+        public async Task<List<Room>> GetRooms()
         {
-            return _rooms;
+            return await _roomsRepository.GetRoomsAsync();
         }
 
-        public void AddUserToGroup(UserRoom userConnection)
+        public string GetRoomByUserName(string userName)
         {
-            userRooms.Add(userConnection);
+            var roomId = _userRepository.GetByNameAsync(userName).RoomId;
+            var room = _roomsRepository.GetByIdAsync(roomId);
+            return room.Name;
         }
 
-        public string GetRoomName(string id)
+        public User AddUser(User user)
         {
-            return userRooms.First(x => x.ConnectionId == id).Name;
+            return _userRepository.AddAsync(user);
         }
 
-        public List<string> GetUsersByRoom(string id)
+        public User GetUserByConnectionId(string id)
         {
-            var roomName = _rooms.First(x => x.id == id).name;
-            var userlist = userRooms.Where(x => x.Name == roomName);
-            List<string> userNames = new List<string>();
-            foreach (var user in userlist)
-            {
-                userNames.Add(GetUserByConnection(user.ConnectionId));
-            }
-            return userNames;
-
+            return _userRepository.GetUserByConnectionId(id);
+        }
+        public void DeleteUserFromRoom(string userName)
+        {
+            _userRepository.DeleteUserFromRoom(userName);
         }
     }
 }
