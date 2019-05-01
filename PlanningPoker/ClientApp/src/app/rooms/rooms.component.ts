@@ -50,7 +50,8 @@ export class RoomsComponent implements OnInit {
     return window.location.href.includes('/room');
   }
   logOut() {
-   // this.userService.logOut();
+    sessionStorage.removeItem('UserName');
+    this.userService.logOut();
     this.roouter.navigate(['']);
   }
 }

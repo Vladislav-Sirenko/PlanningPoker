@@ -1,7 +1,15 @@
 <div *ngIf="!inRoom()">
-  <button (click)="logOut()" class="btn btn-primary mt-3 mr-5 float-right">Log out</button>
-  <div class="container ">
-    <h1 class="text-center">Add new room or join existing</h1>
+  <!-- <button (click)="logOut()" class="btn btn-primary  float-right">Log out</button> -->
+  <div class="container border bg-dark mt-0" style="height:auto;min-height:500px;border-radius:5px;box-shadow: inset 0 0 8px rgb(169, 170, 105);" >
+    <div class="row mt-2" >
+      <div class="col-9 ">
+
+      </div>
+      <button (click)="logOut()" class="col-2 btn btn-warning" >Log out</button>
+    </div>
+      
+    <h2 class="text-center ">Add new room or join existing</h2>
+    
     <div class="row justify-content-center">
       <div class="col-4 input-group mb-3">
 

@@ -153,6 +153,9 @@ export class UserService {
     const user = sessionStorage.getItem('UserName');
     this.http.post(this._baseUrl + 'api/Rooms/DeleteUserFromRoom', user).subscribe();
   }
+  logOut() {
+    this._userDisconnect.next();
+  }
 
 }
 

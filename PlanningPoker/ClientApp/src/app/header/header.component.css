@@ -1,10 +1,16 @@
-.header {
-    background-color:black;
-    height: 100px;
+*{
+    margin:0;
+    padding:0;
     color: aliceblue;
+    color:rgb(169, 170, 105)
 }
-.user-name {
-        float: right;
-        text-align: center;
-        margin-right: 10px;
+.header {
+    /* background-color:rgb(53, 49, 49); */
+    min-height: 80px;
+    height: auto;
+    color:rgb(169, 170, 105)
+    
+}
+.user-name{
+    color:rgb(169, 170, 105)
 }

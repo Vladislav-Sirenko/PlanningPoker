@@ -49,7 +49,8 @@ namespace PlanningPoker
             services.AddScoped<IRoomsRepository, RoomRepository>();
             services.AddScoped<IUserRepository,UserRepository>();
             services.AddDbContext<PokerContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("PlanningPokerDatabase")));
+                options.UseSqlServer(Configuration.GetConnectionString("MyDbConnection")));
+            services.BuildServiceProvider().GetService<PokerContext>().Database.Migrate();
             // In production, the Angular files will be served from this directory
             services.AddSignalR();
             services.AddSpaStaticFiles(configuration =>

@@ -26,6 +26,8 @@ export class RoomComponent implements OnInit {
     sessionStorage.setItem('Unload', '1');
   }
   ngOnInit(): void {
+
+    sessionStorage.removeItem('UserVote');
     if (sessionStorage.getItem('Unload')) {
       this.router.navigate(['']);
       sessionStorage.removeItem('Unload');
@@ -72,7 +74,8 @@ export class RoomComponent implements OnInit {
         this.userVote = [];
         for (const user in result) {
           if (user) {
-            const index = this.users.indexOf(user);
+            const usr = this.users.find(x => x.toLowerCase() === user.toLowerCase());
+            const index = this.users.indexOf(usr);
             this.userVote[index] = result[user];
           }
         }
@@ -153,7 +156,8 @@ export class RoomComponent implements OnInit {
   }
 
   logOut() {
-    sessionStorage.removeItem('UserName');
+    sessionStorage.removeItem('UserVote');
+    this.userService.deleteUserFromRoom();
     this.router.navigate(['']);
   }
 
