@@ -18,14 +18,16 @@ export class CardComponent implements OnInit {
 
   getHeaderClass() {
 
-    return sessionStorage.getItem('UserVote') === this.value.toString() ? 'card border-success  mb-3 bg-success' :
+    return this.checkUserVote() ? 'card border-success  mb-3 bg-success' :
       'card border-success  mb-3 ';
   }
   getBodyClass() {
 
-    return sessionStorage.getItem('UserVote') === this.value.toString() ? 'card-body bg-success' : 'card-body ';
+   return this.checkUserVote() ? 'card-body bg-success' : 'card-body ';
   }
-
+  checkUserVote(): boolean {
+    return sessionStorage.getItem('UserVote') === this.value.toString();
+  }
 
   public sendMessage() {
     if (!sessionStorage.getItem('UserVote')) {

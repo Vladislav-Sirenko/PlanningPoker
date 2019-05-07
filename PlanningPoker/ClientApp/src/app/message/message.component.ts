@@ -31,7 +31,7 @@ export class MessageComponent implements OnInit {
     this.messages.push(received);
     });
     this.userService.voted.subscribe((name) => {
-      const received = `${name}`;
+      const received = `${name} voted`;
       this.messages.push(received);
       });
 

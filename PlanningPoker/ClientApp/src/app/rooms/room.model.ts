@@ -5,6 +5,6 @@ export class Room {
     }
     id: string;
     name: string;
-    CreatorName: string;
+    creatorName: string;
 }
 

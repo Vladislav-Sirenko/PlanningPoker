@@ -162,7 +162,11 @@ namespace PlanningPoker.Services
         }
         public void DeleteUserFromRoom(string userName)
         {
+            var roomName = GetRoomByUserName(userName);
             _userRepository.DeleteUserFromRoom(userName);
+            _hubContext.Clients.Group(roomName).SendAsync("Disconnect", userName);
+
+
         }
     }
 }

@@ -41,15 +41,13 @@ namespace PlanningPoker
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info {Title = "My API", Version = "v1"});
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
             });
-         //   services.AddSingleton<Func<string, DbConnection>>(provider => connStr => new SqlConnection(connStr));
+            //   services.AddSingleton<Func<string, DbConnection>>(provider => connStr => new SqlConnection(connStr));
 
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IRoomsRepository, RoomRepository>();
-            services.AddScoped<IUserRepository,UserRepository>();
-            services.AddDbContext<PokerContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("MyDbConnection")));
+            services
+                .RegisterApplicationDependencies()
+                .RegisterDalDependencies();
             services.BuildServiceProvider().GetService<PokerContext>().Database.Migrate();
             // In production, the Angular files will be served from this directory
             services.AddSignalR();
@@ -85,7 +83,7 @@ namespace PlanningPoker
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
-         
+
 
             if (env.IsDevelopment())
             {
@@ -109,7 +107,7 @@ namespace PlanningPoker
             {
                 routes.MapHub<LoopyHub>("/loopy");
             });
-          //  SeedData.SeedDb(context);
+            //  SeedData.SeedDb(context);
 
             app.UseMvc(routes =>
             {

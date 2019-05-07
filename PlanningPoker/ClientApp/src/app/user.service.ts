@@ -57,8 +57,8 @@ export class UserService {
     this._hubConnection.on('Vote', (name: string) => {
       this._voted.next(name);
     });
-    this._hubConnection.on('Send', (name: string) => {
-      this._send.next(name);
+    this._hubConnection.on('Send', (data) => {
+      this._send.next(data);
     });
     this._hubConnection.on('GetVotes', (votes) => {
       this._finishVoting.next(votes);
@@ -85,7 +85,7 @@ export class UserService {
 
 
   addUser(user: User) {
-    sessionStorage.setItem('UserName', user.Name);
+    sessionStorage.setItem('UserName', user.name);
     this.http.post(this._baseUrl + 'api/Rooms/AddUser', user).subscribe();
   }
 
@@ -101,12 +101,8 @@ export class UserService {
   }
 
   getUserVote(id: string) {
-    this.http.post(this._baseUrl + 'api/Rooms/' + id + '/Votes', null).subscribe();
+  return  this.http.post(this._baseUrl + 'api/Rooms/' + id + '/Votes', null);
   }
-
-  // finishVote(id: string) {
-  //   return this.http.get<UserVote[]>(this._baseUrl + 'api/Rooms/' + id + '/Votes');
-  // }
 
   resetUserVotes(id: string) {
     this.http.post(this._baseUrl + 'api/Rooms/' + id + '/ResetVotes', id).subscribe();
@@ -124,7 +120,7 @@ export class UserService {
 
   addRoom(room: Room) {
     const user = sessionStorage.getItem('UserName');
-    room.CreatorName = user;
+    room.creatorName = user;
     this.http.post(this._baseUrl + 'api/Rooms', room).subscribe();
   }
   getRooms() {

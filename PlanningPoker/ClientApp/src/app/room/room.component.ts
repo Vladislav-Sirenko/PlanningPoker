@@ -38,19 +38,19 @@ export class RoomComponent implements OnInit {
         () => {
           this.userService.getUsers(this.id).subscribe(users => {
             this.users = [];
-            // tslint:disable-next-line:forin
-            for (const user in users) {
-              this.users.push(users[user]['name']);
+            for (const user of users) {
+              this.users.push(user.name);
             }
             this.userService.getRolesForRoom(this.users, this.id).subscribe((roles) => {
               this.roles = [];
-              // tslint:disable-next-line:forin
               for (const role in roles) {
                 if (role) {
                   this.roles.push(roles[role]);
                 }
               }
-              this.role = this.roles[this.users.indexOf(sessionStorage.getItem('UserName'))];
+              const userName = sessionStorage.getItem('UserName');
+              const index = this.users.indexOf(userName);
+              this.role = this.roles[index];
             });
           });
         });
@@ -91,9 +91,8 @@ export class RoomComponent implements OnInit {
           this.users = [];
           this.userService.getUsers(this.id).subscribe(users => {
             this.users = [];
-            // tslint:disable-next-line:forin
-            for (const user in users) {
-              this.users.push(users[user]['name']);
+            for (const user of users) {
+              this.users.push(user.name);
             }
           });
         });
@@ -147,7 +146,7 @@ export class RoomComponent implements OnInit {
   }
 
   getVotes() {
-    this.userService.getUserVote(this.id);
+    this.userService.getUserVote(this.id).subscribe();
   }
 
   resetVotes() {
@@ -157,6 +156,7 @@ export class RoomComponent implements OnInit {
 
   logOut() {
     sessionStorage.removeItem('UserVote');
+    const name = sessionStorage.getItem('UserName');
     this.userService.deleteUserFromRoom();
     this.router.navigate(['']);
   }
@@ -168,7 +168,7 @@ export class RoomComponent implements OnInit {
     return false;
   }
 
-  constructor(private userService: UserService, public router: Router, private route: ActivatedRoute) {
+  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute) {
     this.route.queryParams.subscribe(params => {
       this.name = params['name'];
       this.id = params['id'];
