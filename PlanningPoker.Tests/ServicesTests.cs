@@ -32,14 +32,15 @@ namespace PlanningPoker.Tests
 
 
         [Fact]
-        public void GetRooms_Shlould_Return_Romm_If_Room_Was_Added()
+        public async Task GetRooms_Shlould_Return_Romm_If_Room_Was_Added()
         {
             // Arrange
             // Act
-             _sut.AddRoom(_room);
-            var rooms = _sut.GetRooms();
+            
+            await _sut.AddRoom(_room);
+            var rooms = await _sut.GetRooms();
             // Assert
-            Assert.Equal(rooms.Result.FirstOrDefault(), _room);
+            Assert.Equal(rooms.FirstOrDefault(), _room);
         }
         //[Fact]
         //public void GetUserByConnection_Should_return_UserName_If_User_was_added()
