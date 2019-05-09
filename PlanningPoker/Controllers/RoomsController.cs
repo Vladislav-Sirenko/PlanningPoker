@@ -64,10 +64,18 @@ namespace PlanningPoker.Controllers
         }
 
         [HttpPost("{id}/Votes")]
-        public void GetVotesByRoom(string id) => _userService.GetVotesForRoom(id);
+        public ActionResult GetVotesByRoom(string id)
+        {
+            _userService.GetVotesForRoom(id);
+            return Ok();
+        }
 
         [HttpPost("{id}/ResetVotes")]
-        public void ResetVotesByRoom(string id) => _userService.ResetVote(id);
+        public ActionResult ResetVotesByRoom(string id)
+        {
+            _userService.ResetVote(id);
+            return Ok();
+        }
 
         [HttpPost("{id}/UserVote")]
         public void UserVote([FromRoute] string id, [FromBody] int vote) => _userService.AddVote(id, vote);

@@ -30,16 +30,13 @@ namespace PlanningPoker.Tests
             response.EnsureSuccessStatusCode();
         }
         [Fact]
-        public async Task Get_Users_For_Room_Where_Nothing_Exist()
+        public async Task Reset_Votes_For_Room()
         {
             var client = Factory.CreateClient();
-            var room = new Room() { Id = "1", CreatorName = "2", Name = "Room" };
-            string serializedObject = JsonConvert.SerializeObject(room);
-            var content = new StringContent(serializedObject);
-            await client.PostAsync("api/Rooms", content);
-            var response = await client.GetAsync("api/Rooms/1/Users");
-            Assert.Equal(HttpStatusCode.InternalServerError,response.StatusCode);
+            var response = await client.PostAsync("api/Rooms/1/ResetVotes", null);
+            Assert.Equal(HttpStatusCode.OK,response.StatusCode);
         }
+        
         [Fact]
         public async  Task Post_Null_Rooms()
         {
@@ -47,6 +44,22 @@ namespace PlanningPoker.Tests
             var code = await client.PostAsync("api/Rooms", null);
             Assert.Equal(expected: HttpStatusCode.BadRequest,actual: code.StatusCode);
         }
-        
+
+        [Fact]
+        public async Task Get_Users_For_Room()
+        {
+            var client = Factory.CreateClient();
+            var code = await client.GetAsync("api/Rooms/1/users");
+            Assert.Equal(expected: HttpStatusCode.OK, actual: code.StatusCode);
+        }
+
+        //[Fact]
+        //public async Task Get_Votes_For_Room()
+        //{
+        //    var client = Factory.CreateClient();
+        //    var response = await client.PostAsync("api/Rooms/1/votes", null);
+        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //}
+
     }
 }

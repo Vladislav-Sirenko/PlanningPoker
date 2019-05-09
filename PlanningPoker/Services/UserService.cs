@@ -56,9 +56,13 @@ namespace PlanningPoker.Services
         public string GetRoleForRoom(string userName, string id)
         {
             var room = _roomsRepository.GetByIdAsync(id);
-            if (userName == room.CreatorName)
-                return "Admin";
-            return "Guest";
+            if (room != null)
+            {
+                if (userName == room.CreatorName)
+                    return "Admin";
+                return "Guest";
+            }
+            return null;
         }
 
         public IEnumerable<string> GetRoles(string[] users, string id)
@@ -107,10 +111,14 @@ namespace PlanningPoker.Services
         public User AddUserConnection(string id, string roomId, string userName)
         {
             var user = _userRepository.GetByNameAsync(userName);
-            user.ConnectionId = id;
-            user.RoomId = roomId;
-            _userRepository.UpdateAsync(user);
+            if (user != null) 
+            {
+                user.ConnectionId = id;
+                user.RoomId = roomId;
+                _userRepository.UpdateAsync(user);
+            }
             return user;
+
         }
         //public string GetUserByConnection(string id)
         //{
