@@ -86,7 +86,7 @@ export class UserService {
 
   addUser(user: User) {
     sessionStorage.setItem('UserName', user.name);
-    this.http.post(this._baseUrl + 'api/Rooms/AddUser', user).subscribe();
+    this.http.post(this._baseUrl + 'api/User', user).subscribe();
   }
 
   // deleteUser(user: string) {
@@ -101,7 +101,7 @@ export class UserService {
   }
 
   getUserVote(id: string) {
-  return  this.http.post(this._baseUrl + 'api/Rooms/' + id + '/Votes', null);
+    return this.http.post(this._baseUrl + 'api/Rooms/' + id + '/Votes', null);
   }
 
   resetUserVotes(id: string) {
@@ -147,7 +147,7 @@ export class UserService {
 
   deleteUserFromRoom() {
     const user = sessionStorage.getItem('UserName');
-    this.http.post(this._baseUrl + 'api/Rooms/DeleteUserFromRoom', user).subscribe();
+    this.http.delete(this._baseUrl + 'api/Rooms/DeleteUserFromRoom/' + user).subscribe();
   }
   logOut() {
     this._userDisconnect.next();

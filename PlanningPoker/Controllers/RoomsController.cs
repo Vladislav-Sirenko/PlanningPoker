@@ -78,18 +78,13 @@ namespace PlanningPoker.Controllers
         }
 
         [HttpPost("{id}/UserVote")]
-        public void UserVote([FromRoute] string id, [FromBody] int vote) => _userService.AddVote(id, vote);
+        public ActionResult UserVote([FromRoute] string id, [FromBody] int vote)
+        {
+            _userService.AddVote(id, vote);
+            return Ok();
+        }
 
         [HttpPost("{id}/Roles")]
-        public IEnumerable<string> GetRolesList([FromBody] string[] users, string id) => _userService.GetRoles(users, id);
-
-        [HttpPost("[action]")]
-        public void AddUser([FromBody] User user) => _userService.AddUser(user);
-
-        [HttpPost("[action]")]
-        public void DeleteUserFromRoom(string user)
-        {
-            _userService.DeleteUserFromRoom(user);
-        }
+        public ActionResult<IEnumerable<string>> GetRolesList([FromBody] string[] users, string id) => Ok(_userService.GetRoles(users, id));
     }
 }
