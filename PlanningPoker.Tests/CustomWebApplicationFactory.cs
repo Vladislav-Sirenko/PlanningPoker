@@ -14,7 +14,7 @@ namespace PlanningPoker.Tests
     {
         public CustomWebApplicationFactory()
         {
-            
+
         }
         protected override TestServer CreateServer(IWebHostBuilder builder) =>
             new TestServer(
@@ -22,7 +22,7 @@ namespace PlanningPoker.Tests
                     .UseEnvironment("Development")
                     .UseContentRoot(System.IO.Directory.GetCurrentDirectory())
                     .UseStartup<Startup>()
-                    .ConfigureTestServices(c => ConfigureDbContexts(c)));
+                    .ConfigureTestServices(ConfigureDbContexts));
 
         private static void ConfigureDbContexts(IServiceCollection services)
         {

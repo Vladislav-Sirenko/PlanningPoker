@@ -23,10 +23,13 @@ export class CardComponent implements OnInit {
   }
   getBodyClass() {
 
-   return this.checkUserVote() ? 'card-body bg-success' : 'card-body ';
+    return this.checkUserVote() ? 'card-body bg-success' : 'card-body ';
   }
   checkUserVote(): boolean {
-    return sessionStorage.getItem('UserVote') === this.value.toString();
+    if (this.value) {
+      return sessionStorage.getItem('UserVote') === this.value.toString();
+    }
+    return false;
   }
 
   public sendMessage() {

@@ -22,41 +22,54 @@ namespace PlanningPoker.Tests
         [Fact]
         public async Task Post_Rooms()
         {
+            //Arrange
             var client = Factory.CreateClient();
             var room = new Room() { Id = "1", CreatorName = "2", Name = "Room" };
             string serializedObject = JsonConvert.SerializeObject(room);
             var content = new StringContent(serializedObject);
+            //Act
             await client.PostAsync("api/Rooms", content);
             var response = await client.GetAsync("api/Rooms");
+            //Assert
             response.EnsureSuccessStatusCode();
         }
         [Fact]
         public async Task Reset_Votes_For_Room()
         {
+            //Arrange
             var client = Factory.CreateClient();
+            //Act
             var response = await client.PostAsync("api/Rooms/1/ResetVotes", null);
+            //Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public async Task Post_Null_Rooms()
         {
+            //Arrange
             var client = Factory.CreateClient();
+            //Act
             var code = await client.PostAsync("api/Rooms", null);
+            //Assert
             Assert.Equal(expected: HttpStatusCode.BadRequest, actual: code.StatusCode);
         }
 
         [Fact]
         public async Task Get_Users_For_Room()
         {
+            //Arrange
             var client = Factory.CreateClient();
+            //Act
             var code = await client.GetAsync("api/Rooms/1/users");
+            //Assert
             Assert.Equal(expected: HttpStatusCode.OK, actual: code.StatusCode);
         }
 
         [Fact]
         public async Task Add_User_To_Room()
         {
+            //Arrange
             var client = Factory.CreateClient();
             var user = new User()
             {
@@ -70,8 +83,10 @@ namespace PlanningPoker.Tests
             };
             string serializedObject = JsonConvert.SerializeObject(user);
             var content = new StringContent(serializedObject);
-            await client.PostAsync("api/Users", content);
-            var response = await client.GetAsync("api/Rooms");
+            //Act
+            await client.PostAsync("api/User", content);
+            var response = await client.GetAsync("api/User");
+            //Assert
             response.EnsureSuccessStatusCode();
         }
     }

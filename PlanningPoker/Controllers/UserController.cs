@@ -20,16 +20,16 @@ namespace PlanningPoker.Controllers
         }
         // GET: api/User
         [HttpGet]
-        public async Task<ActionResult>  Get()
+        public  ActionResult  Get()
         {
             return Ok();
         }
 
         // GET: api/User/5
         [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        public ActionResult Get(int id)
         {
-            return "value";
+            return Ok();
         }
 
         // POST: api/User

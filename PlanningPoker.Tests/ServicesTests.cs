@@ -21,13 +21,15 @@ namespace PlanningPoker.Tests
         private readonly IUserService _sut;
         private readonly IUserRepository _userRepository;
         private readonly IRoomsRepository _roomsRepository;
-        private readonly IHubContext<LoopyHub> hubContext;
+        private readonly IHubContext<LoopyHub> _hubContext;
+        private const string One = "1";
+
         public ServicesTests()
         {
             _userRepository = Substitute.For<IUserRepository>();
             _roomsRepository = Substitute.For<IRoomsRepository>();
-            hubContext = Substitute.For<IHubContext<LoopyHub>>();
-            _sut = new UserService(hubContext, _roomsRepository, _userRepository);
+            _hubContext = Substitute.For<IHubContext<LoopyHub>>();
+            _sut = new UserService(_hubContext, _roomsRepository, _userRepository);
         }
 
 
@@ -38,7 +40,7 @@ namespace PlanningPoker.Tests
             await _sut.AddRoom(new Room());
             // Assert
             Assert.Single(_roomsRepository.ReceivedCalls());
-            Assert.Single(hubContext.ReceivedCalls());
+            Assert.Single(_hubContext.ReceivedCalls());
         }
         [Fact]
         public void GetUserByConnection_Should_return_UserName_If_User_was_added()
@@ -52,44 +54,101 @@ namespace PlanningPoker.Tests
         [Fact]
         public void GetVotesForRoom_should_return_UserVote_If_Votes_Were_added()
         {
-            // Arrange
             // Act
-            _sut.GetRoles(new string[2], "1");
+            _sut.GetRoles(new string[2], One);
             // Assert
-            Assert.Single(hubContext.ReceivedCalls());
+            Assert.Single(_hubContext.ReceivedCalls());
         }
         [Fact]
         public void AddUserConnection_when_User_Doesnt_exist_in_db()
         {
             // Act
-            _sut.AddUserConnection("1", "1", "1");
+            _sut.AddUserConnection(One, One, One);
+            // Assert
             Assert.Single(_userRepository.ReceivedCalls());
         }
         [Fact]
         public void AddUserConnection_when_User_exist_in_db()
         {
+            // Arrange
+            _userRepository.GetByNameAsync(One).Returns(new User());
             // Act
-            _userRepository.GetByNameAsync("1").Returns(new User());
-            _sut.AddUserConnection("1", "1", "1");
-            Assert.Equal(2,_userRepository.ReceivedCalls().Count());
+            _sut.AddUserConnection(One, One, One);
+            //Assert
+            Assert.Equal(2, _userRepository.ReceivedCalls().Count());
         }
         [Fact]
         public void AddVote()
         {
-            _userRepository.GetByNameAsync("1").Returns(new User(){RoomId = "1"});
-            _roomsRepository.GetByIdAsync("1").Returns(new Room());
-            _sut.AddVote("1",1);
-            Assert.Equal(2,_userRepository.ReceivedCalls().Count());
+            // Arrange
+            _userRepository.GetByNameAsync(One).Returns(new User() { RoomId = One });
+            _roomsRepository.GetByIdAsync(One).Returns(new Room());
+            // Act
+            _sut.AddVote(One, 1);
+            //Assert
+            Assert.Equal(2, _userRepository.ReceivedCalls().Count());
             Assert.Single(_roomsRepository.ReceivedCalls());
-            Assert.Single(hubContext.ReceivedCalls());
+            Assert.Single(_hubContext.ReceivedCalls());
+        }
+        [Fact]
+        public void DeleteRoom()
+        {
+            // Arrange
+            _userRepository.GetUsersByRoomId(One).Returns(new List<User>());
+            // Act
+            _sut.DeleteRoom(One);
+            //Assert
+            Assert.Equal(2, _userRepository.ReceivedCalls().Count());
+            Assert.Single(_roomsRepository.ReceivedCalls());
+            Assert.Single(_hubContext.ReceivedCalls());
+
         }
         [Fact]
         public void DeleteUser()
         {
             // Arrange
+            _roomsRepository.GetByIdAsync(One).Returns(new Room() { Name = One });
+            _userRepository.GetByNameAsync(One).Returns(new User() { RoomId = One });
             // Act
-            _sut.DeleteRoom("1");
+            _sut.DeleteUserFromRoom(One);
+            //Assert
+            Assert.Equal(2, _userRepository.ReceivedCalls().Count());
+            Assert.Single(_hubContext.ReceivedCalls());
 
+        }
+
+        [Fact]
+        public void GetRoomByUserName()
+        {
+            // Arrange
+            _roomsRepository.GetByIdAsync(One).Returns(new Room() { Name = One });
+            _userRepository.GetByNameAsync(One).Returns(new User() { RoomId = One });
+            // Act
+            _sut.GetRoomByUserName(One);
+            //Assert
+            Assert.Single(_userRepository.ReceivedCalls());
+        }
+
+        [Fact]
+        public void GetRooms()
+        {
+            // Arrange
+            _roomsRepository.GetRoomsAsync().Returns(new List<Room>());
+            // Act
+            _sut.GetRooms();
+            //Assert
+            Assert.Single(_roomsRepository.ReceivedCalls());
+        }
+
+        [Fact]
+        public void ResetVote()
+        {
+            // Arrange
+            _userRepository.GetUsersByRoomId(One).Returns(new List<User>());
+            // Act
+            _sut.ResetVote(One);
+            //Assert
+            Assert.Equal(2, _userRepository.ReceivedCalls().Count());
         }
     }
 }

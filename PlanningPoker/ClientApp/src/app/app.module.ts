@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
@@ -10,8 +10,10 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { HeaderComponent } from './header/header.component';
 import { RoomComponent } from './room/room.component';
 import { UserService } from './user.service';
-import { MessageComponent } from './message/message.component';
 import { RoomsComponent } from './rooms/rooms.component';
+import { InjectionToken } from '@angular/core';
+import { MessageComponentModule } from './message/message.module';
+export const BASE_URL = new InjectionToken<string>('BASE_URL');
 
 @NgModule({
   declarations: [
@@ -20,8 +22,9 @@ import { RoomsComponent } from './rooms/rooms.component';
     DashboardComponent,
     HeaderComponent,
     RoomComponent,
-    MessageComponent,
+    MessageComponentModule,
     RoomsComponent,
+    ReactiveFormsModule
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -29,10 +32,12 @@ import { RoomsComponent } from './rooms/rooms.component';
     FormsModule,
     RouterModule.forRoot([
       { path: 'app', component: AppComponent },
-      { path: 'room/:id', component: RoomComponent ,
-      data: {
-        type: 'edit'
-      } }
+      {
+        path: 'room/:id', component: RoomComponent,
+        data: {
+          type: 'edit'
+        }
+      }
     ])
   ],
   providers: [UserService],

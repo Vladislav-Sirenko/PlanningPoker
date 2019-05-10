@@ -154,8 +154,8 @@ namespace PlanningPoker.Services
 
         public string GetRoomByUserName(string userName)
         {
-            var roomId = _userRepository.GetByNameAsync(userName).RoomId;
-            var room = _roomsRepository.GetByIdAsync(roomId);
+            var user = _userRepository.GetByNameAsync(userName);
+            var room = _roomsRepository.GetByIdAsync(user.RoomId);
             return room.Name;
         }
 

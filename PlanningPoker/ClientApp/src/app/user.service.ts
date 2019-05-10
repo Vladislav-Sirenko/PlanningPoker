@@ -35,8 +35,8 @@ export class UserService {
   public roomRoles = this._roomRoles.asObservable();
 
   private _hubConnection: signalR.HubConnection | undefined;
-  constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-    this._baseUrl = baseUrl;
+  constructor(private http: HttpClient) {
+    this._baseUrl = 'https://localhost:5001';
     this._hubConnection = new signalR.HubConnectionBuilder()
       .withUrl('loopy')
       .configureLogging(signalR.LogLevel.Information)
@@ -89,13 +89,6 @@ export class UserService {
     this.http.post(this._baseUrl + 'api/User', user).subscribe();
   }
 
-  // deleteUser(user: string) {
-  //   sessionStorage.removeItem('UserName');
-  //   sessionStorage.removeItem('UserVote');
-  //   if (this._hubConnection) {
-  //     this._hubConnection.invoke('Disconnect', user);
-  //   }
-  // }
   getUsers(id: string) {
     return this.http.get<User[]>(this._baseUrl + 'api/Rooms/' + id + '/Users');
   }
