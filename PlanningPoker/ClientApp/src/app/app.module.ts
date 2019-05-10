@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
@@ -12,7 +12,7 @@ import { RoomComponent } from './room/room.component';
 import { UserService } from './user.service';
 import { RoomsComponent } from './rooms/rooms.component';
 import { InjectionToken } from '@angular/core';
-import { MessageComponentModule } from './message/message.module';
+import { MessageComponent } from './message/message.component';
 export const BASE_URL = new InjectionToken<string>('BASE_URL');
 
 @NgModule({
@@ -22,9 +22,8 @@ export const BASE_URL = new InjectionToken<string>('BASE_URL');
     DashboardComponent,
     HeaderComponent,
     RoomComponent,
-    MessageComponentModule,
+    MessageComponent,
     RoomsComponent,
-    ReactiveFormsModule
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

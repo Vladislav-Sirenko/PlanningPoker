@@ -15,7 +15,7 @@ describe('UserService', () => {
         HttpClientModule],
       providers: [UserService]
     });
-    sut = new UserService(null);
+    sut = new UserService(null, null);
   });
 
   it('should be created', inject([UserService], (service: UserService) => {

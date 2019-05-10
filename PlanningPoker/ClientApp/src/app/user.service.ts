@@ -35,8 +35,8 @@ export class UserService {
   public roomRoles = this._roomRoles.asObservable();
 
   private _hubConnection: signalR.HubConnection | undefined;
-  constructor(private http: HttpClient) {
-    this._baseUrl = 'https://localhost:5001';
+  constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
+    this._baseUrl = baseUrl;
     this._hubConnection = new signalR.HubConnectionBuilder()
       .withUrl('loopy')
       .configureLogging(signalR.LogLevel.Information)

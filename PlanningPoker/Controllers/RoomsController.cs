@@ -54,7 +54,7 @@ namespace PlanningPoker.Controllers
         }
 
         [HttpGet("{id}/users")]
-        public ActionResult GetUsersByRoom(string id)
+        public ActionResult<List<User>> GetUsersByRoom(string id)
         {
             if (id != null)
             {
