@@ -53,7 +53,7 @@ namespace PlanningPoker.Controllers
             return BadRequest();
         }
 
-        [HttpGet("{id}/users")]
+        [HttpGet("{id}/Users")]
         public ActionResult<List<User>> GetUsersByRoom(string id)
         {
             if (id != null)
@@ -63,21 +63,21 @@ namespace PlanningPoker.Controllers
             return BadRequest();
         }
 
-        [HttpPost("{id}/Votes")]
+        [HttpGet("{id}/Votes")]
         public ActionResult GetVotesByRoom(string id)
         {
             _userService.GetVotesForRoom(id);
             return Ok();
         }
 
-        [HttpPost("{id}/ResetVotes")]
+        [HttpDelete("{id}/Votes")]
         public ActionResult ResetVotesByRoom(string id)
         {
             _userService.ResetVote(id);
             return Ok();
         }
 
-        [HttpPost("{id}/UserVote")]
+        [HttpPost("{id}/Votes")]
         public ActionResult UserVote([FromRoute] string id, [FromBody] int vote)
         {
             _userService.AddVote(id, vote);

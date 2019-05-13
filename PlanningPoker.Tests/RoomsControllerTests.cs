@@ -83,9 +83,11 @@ namespace PlanningPoker.Tests
             };
             string serializedObject = JsonConvert.SerializeObject(user);
             var content = new StringContent(serializedObject);
+
             //Act
             await client.PostAsync("api/User", content);
             var response = await client.GetAsync("api/User");
+
             //Assert
             response.EnsureSuccessStatusCode();
         }

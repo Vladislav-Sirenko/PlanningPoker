@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NSubstitute;
+using NSubstitute.ReceivedExtensions;
 using PlanningPoker.Context;
 using PlanningPoker.Models;
 using PlanningPoker.Repostitories;
@@ -23,6 +24,18 @@ namespace PlanningPoker.Tests
         private readonly IRoomsRepository _roomsRepository;
         private readonly IHubContext<LoopyHub> _hubContext;
         private const string One = "1";
+        private readonly Room _room = new Room() { Id = One, Name = One, CreatorName = One };
+
+        private readonly User _user = new User()
+        {
+            RoomId = One,
+            Name = One,
+            Id = 1,
+            Vote = 1,
+            ConnectionId = One,
+            Email = One,
+            Password = One
+        };
 
         public ServicesTests()
         {
@@ -37,18 +50,19 @@ namespace PlanningPoker.Tests
         public async Task GetRooms_Shlould_Return_Romm_If_Room_Was_Added()
         {
             // Act
-            await _sut.AddRoom(new Room());
+            await _sut.AddRoom(_room);
             // Assert
-            Assert.Single(_roomsRepository.ReceivedCalls());
-            Assert.Single(_hubContext.ReceivedCalls());
+            Received.InOrder(async () => await _roomsRepository.AddAsync(_room));
+            Received.InOrder(async () => await _hubContext.Clients.All.SendAsync("AddRoom"));
         }
         [Fact]
         public void GetUserByConnection_Should_return_UserName_If_User_was_added()
         {
             // Act
-            _sut.AddUser(new User());
+            _sut.AddUser(_user);
 
             // Assert
+            Received.InOrder(() => _userRepository.AddAsync(_user));
             Assert.Single(_userRepository.ReceivedCalls());
         }
         [Fact]
@@ -77,6 +91,7 @@ namespace PlanningPoker.Tests
             //Assert
             Assert.Equal(2, _userRepository.ReceivedCalls().Count());
         }
+
         [Fact]
         public void AddVote()
         {
@@ -90,6 +105,7 @@ namespace PlanningPoker.Tests
             Assert.Single(_roomsRepository.ReceivedCalls());
             Assert.Single(_hubContext.ReceivedCalls());
         }
+
         [Fact]
         public void DeleteRoom()
         {

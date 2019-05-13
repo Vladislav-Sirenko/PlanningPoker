@@ -94,11 +94,11 @@ export class UserService {
   }
 
   getUserVote(id: string) {
-    return this.http.post(this._baseUrl + 'api/Rooms/' + id + '/Votes', null);
+    return this.http.get(this._baseUrl + 'api/Rooms/' + id + '/Votes');
   }
 
   resetUserVotes(id: string) {
-    this.http.post(this._baseUrl + 'api/Rooms/' + id + '/ResetVotes', id).subscribe();
+    this.http.delete(this._baseUrl + 'api/Rooms/' + id + '/Votes').subscribe();
   }
   sendMessage(data: string) {
     if (this._hubConnection) {
@@ -132,7 +132,7 @@ export class UserService {
 
   addUserVote(vote: number) {
     const id = sessionStorage.getItem('UserName');
-    this.http.post(this._baseUrl + 'api/Rooms/' + id + '/UserVote', vote).subscribe();
+    this.http.post(this._baseUrl + 'api/Rooms/' + id + '/Votes', vote).subscribe();
   }
   getRolesForRoom(users: string[], id) {
     return this.http.post(this._baseUrl + 'api/Rooms/' + id + '/Roles', users);
