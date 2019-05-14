@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlanningPoker.Context;
 
 namespace PlanningPoker.Migrations
 {
     [DbContext(typeof(PokerContext))]
-    partial class PokerContextModelSnapshot : ModelSnapshot
+    [Migration("20190514084520_remove_state")]
+    partial class remove_state
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,8 +29,6 @@ namespace PlanningPoker.Migrations
                     b.Property<string>("CreatorName");
 
                     b.Property<string>("Name");
-
-                    b.Property<bool>("SessionEnded");
 
                     b.HasKey("Id");
 

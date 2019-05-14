@@ -1,35 +1,34 @@
 <div *ngIf="!inRoom()">
-  <!-- <button (click)="logOut()" class="btn btn-primary  float-right">Log out</button> -->
-  <div class="container border bg-dark mt-0" style="height:auto;min-height:500px;border-radius:5px;box-shadow: inset 0 0 8px rgb(169, 170, 105);" >
-    <div class="row mt-2" >
-      <div class="col-9 ">
+    <!-- <button (click)="logOut()" class="btn btn-primary  float-right">Log out</button> -->
+    <div class="container border bg-dark mt-0" style="height:auto;min-height:500px;border-radius:5px;box-shadow: inset 0 0 8px rgb(169, 170, 105);">
+        <div class="row mt-2">
+            <div class="col-9 ">
 
-      </div>
-      <button (click)="logOut()" class="col-2 btn btn-warning" >Log out</button>
-    </div>
-      
-    <h2 class="text-center ">Add new room or join existing</h2>
-    
-    <div class="row justify-content-center">
-      <div class="col-4 input-group mb-3">
+            </div>
+            <button (click)="logOut()" class="col-2 btn btn-warning">Log out</button>
+        </div>
 
-        <input type="text" [(ngModel)]="name" class="form-control rounded" placeholder="Room name"
-          aria-label="Room name" aria-describedby="basic-addon1">
-      </div>
-    </div>
-    <div class="row justify-content-md-center">
-      <button (click)="addRoom()" class="col-md-3 col-xsm-6 first">Add Room</button>
-    </div>
-    <div *ngFor="let room of rooms" class=" text-dark ">
+        <h2 class="text-center ">Add new room or join existing</h2>
 
-      <div class=" row justify-content-md-center mb-0">
-        <h3 class="col-5 col-sm-6 text-center">Room:{{room.name}}</h3>
-      </div>
-      <div class="row justify-content-center mt-1">
-          <button (click)="joinRoom(room.id,room.name)" class="btn btn-success col-md-3 col-xsm-6 ">Join Room</button>
-      <button (click)="deleteRoom(room.id)" class=" btn btn-primary col-md-3 col-xsm-6 ml-1">Delete Room</button>
-    
-      </div>
-      </div>
-  </div>
+        <div class="row justify-content-center">
+            <div class="col-4 input-group mb-3">
+
+                <input type="text" [(ngModel)]="name" class="form-control rounded" placeholder="Room name" aria-label="Room name" aria-describedby="basic-addon1">
+            </div>
+        </div>
+        <div class="row justify-content-md-center">
+            <button (click)="addRoom()" class="col-md-3 col-xsm-6 first">Add Room</button>
+        </div>
+        <div *ngFor="let room of rooms" class=" text-dark ">
+
+            <div class=" row justify-content-md-center mb-0">
+                <h3 class="col-5 col-sm-6 text-center">Room:{{room.name}}</h3>
+            </div>
+            <div class="row justify-content-center mt-1">
+                <button (click)="joinRoom(room.id,room.name,room.creatorName)" class="btn btn-success col-md-3 col-xsm-6 ">Join Room</button>
+                <button (click)="deleteRoom(room.id)" class=" btn btn-primary col-md-3 col-xsm-6 ml-1">Delete Room</button>
+
+            </div>
+        </div>
+    </div>
 </div>

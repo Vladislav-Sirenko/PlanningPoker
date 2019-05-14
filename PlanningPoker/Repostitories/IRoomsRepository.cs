@@ -14,7 +14,7 @@ namespace PlanningPoker.Repostitories
 
         Room GetByIdAsync(string id);
 
-        Task UpdateAsync(Room entity);
+        void UpdateAsync(Room entity);
         Task<List<Room>> GetRoomsAsync();
         Room GetByNameAsync(string name);
     }

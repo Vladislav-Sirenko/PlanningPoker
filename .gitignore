@@ -330,3 +330,8 @@ ASALocalRun/
 .mfractor/
 /logs
 PlanningPoker.Tests/obj/
+PlanningPoker.Tests/obj/Debug/netcoreapp2.1/PlanningPoker.Tests.csprojAssemblyReference.cache
+PlanningPoker.Tests/obj/Release/netcoreapp2.1/PlanningPoker.Tests.assets.cache
+PlanningPoker.Tests/obj/Release/netcoreapp2.1/PlanningPoker.Tests.csproj.CoreCompileInputs.cache
+PlanningPoker.Tests/obj/Release/netcoreapp2.1/PlanningPoker.Tests.csprojAssemblyReference.cache
+PlanningPoker.Tests/bin/Release/netcoreapp2.1/PlanningPoker.deps.json

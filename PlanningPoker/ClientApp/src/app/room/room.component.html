@@ -26,8 +26,8 @@
         </div>
 
         <div class="col-lg-4 col-sm-4 ml-2 border" id="messagebox">
-            <button *ngIf="role === 'Admin'" [disabled]="buttonDisabled()" (click)="getVotes()" class="btn btn-primary mt-2">Finish Voting</button>
-            <button *ngIf="role === 'Admin'" (click)="resetVotes()" class="btn btn-primary mt-2">Reset Votes</button>
+            <button *ngIf="isAdmin()" (click)="getVotes()" class="btn btn-primary mt-2">Finish Voting</button>
+            <button *ngIf="isAdmin()" (click)="resetVotes()" class="btn btn-primary mt-2">Reset Votes</button>
             <div class="row border bg-primary">
                 <div class="col-sm-3">
                     <p>Active users</p>
@@ -49,19 +49,18 @@
 
             <div class="row border bg-primary ">
                 <div class="col-sm-3" align="center">
-                    <p *ngFor="let user of users" class="text-dark">{{user}}</p>
+                    <p *ngFor="let user of users" class="text-dark">{{user.name}}</p>
                 </div>
                 <div class="col-sm-2">
-                    <p *ngFor="let role of roles " class="text-dark ">{{role}}</p>
+                    <p *ngFor="let role of roles" class="text-dark ">{{role}}</p>
                 </div>
                 <div class="col-sm-1"></div>
                 <div class="col-sm-1">
                     <p *ngFor="let vot of Votes" class="text-dark justify-content-center">{{vot}}<br></p>
                 </div>
                 <div class="col-sm-2"></div>
-                <!-- <div class="col"></div> -->
                 <div class="col-sm-1">
-                    <p *ngFor="let vote of userVote " class="text-dark ">{{vote}}<br></p>
+                    <p *ngFor="let user of users" class="text-dark ">{{showVote(user)}}<br></p>
                 </div>
             </div>
 

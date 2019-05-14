@@ -14,7 +14,7 @@ export class UserService {
   private _cleared = new Subject<void>();
   private _changed = new Subject<string>();
   private _disconnected = new Subject<string>();
-  private _join = new Subject<string>();
+  private _join = new Subject<boolean>();
   private _voted = new Subject<string>();
   private _roomChanged = new Subject<void>();
   private _finishVoting = new Subject<any>();
@@ -22,6 +22,7 @@ export class UserService {
   private _roles = new Subject<string>();
   private _userDisconnect = new Subject<void>();
   private _roomRoles = new Subject<void>();
+  private _adminJoined = new Subject<string>();
   public roles = this._roles.asObservable();
   public cleared = this._cleared.asObservable();
   public changed = this._changed.asObservable();
@@ -33,6 +34,7 @@ export class UserService {
   public disconnected = this._disconnected.asObservable();
   public finishVoting = this._finishVoting.asObservable();
   public roomRoles = this._roomRoles.asObservable();
+  public adminJoined = this._adminJoined.asObservable();
 
   private _hubConnection: signalR.HubConnection | undefined;
   constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
@@ -63,8 +65,8 @@ export class UserService {
     this._hubConnection.on('GetVotes', (votes) => {
       this._finishVoting.next(votes);
     });
-    this._hubConnection.on('Join', (name: string) => {
-      this._join.next(name);
+    this._hubConnection.on('Join', (roomState: boolean) => {
+      this._join.next(roomState);
     });
     this._hubConnection.on('AddRoom', () => {
       this._roomChanged.next();
@@ -81,12 +83,15 @@ export class UserService {
     this._hubConnection.on('GetRolesForRoom', () => {
       this._roomRoles.next();
     });
+    this._hubConnection.on('NotifyAdminRole', (name: string) => {
+      this._adminJoined.next(name);
+    });
   }
 
 
   addUser(user: User) {
     sessionStorage.setItem('UserName', user.name);
-    this.http.post(this._baseUrl + 'api/User', user).subscribe();
+    this.http.post(this._baseUrl + 'api/Users', user).subscribe();
   }
 
   getUsers(id: string) {
@@ -140,10 +145,16 @@ export class UserService {
 
   deleteUserFromRoom() {
     const user = sessionStorage.getItem('UserName');
-    this.http.delete(this._baseUrl + 'api/Rooms/DeleteUserFromRoom/' + user).subscribe();
+    this.http.delete(this._baseUrl + 'api/Users/' + user).subscribe();
   }
   logOut() {
     this._userDisconnect.next();
+  }
+  notifyAdminRole() {
+    const user = sessionStorage.getItem('UserName');
+    if (this._hubConnection) {
+      this._hubConnection.invoke('NotifyAdminRole');
+    }
   }
 
 }

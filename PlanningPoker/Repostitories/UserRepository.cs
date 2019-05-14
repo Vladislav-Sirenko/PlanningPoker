@@ -19,15 +19,13 @@ namespace PlanningPoker.Repostitories
         public User AddAsync(User entity)
         {
             _context.Users.Add(entity);
-            _context.SaveChanges();
             return entity;
         }
 
-        public async Task DeleteAsync(string name)
+        public void DeleteAsync(string name)
         {
             var entity = _context.Users.FirstOrDefault(x => x.Name == name);
             if (entity != null) _context.Users.Remove(entity);
-            await _context.SaveChangesAsync();
         }
 
         public IEnumerable<User> GetUsersByRoomId(string id)
@@ -50,13 +48,11 @@ namespace PlanningPoker.Repostitories
         public void UpdateAsync(User entity)
         {
             _context.Users.Update(entity);
-            _context.SaveChanges();
         }
 
         public void UpdateRangeAsync(List<User> entity)
         {
             _context.Users.UpdateRange(entity);
-            _context.SaveChanges();
         }
 
         public void DeleteUserFromRoom(string userName)
@@ -64,16 +60,11 @@ namespace PlanningPoker.Repostitories
             var user = _context.Users.FirstOrDefault(x => x.Name == userName);
             if (user != null)
             {
+                user.Vote = null;
                 user.RoomId = null;
                 user.ConnectionId = null;
                 _context.Users.Update(user);
-                _context.SaveChanges();
             }
-        }
-
-        public void Dispose()
-        {
-            _context.Dispose();
         }
     }
 }

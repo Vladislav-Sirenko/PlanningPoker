@@ -22,38 +22,38 @@ namespace PlanningPoker
         {
             _userService.AddUserConnection(Context.ConnectionId, id, userName);
             await Groups.AddToGroupAsync(Context.ConnectionId, id);
-            await Clients.Group(id).SendAsync("Join");
+            var roomState = _userService.CheckSessionState(id);
+            await Clients.Group(id).SendAsync("Join", roomState);
         }
         public async Task Send(string data)
         {
             var group = _userService.GetRoomByUserName(data.Split(":")[0]);
             await Clients.Group(group).SendAsync("Send", data);
         }
-        //public Task Disconnect(string data)
-        //{
-        //    var group = _userService.GetRoomName(Context.ConnectionId);
-        //    Groups.RemoveFromGroupAsync(group, Context.ConnectionId);
-        //    Log.Information("Trying to delete user");
-        //    Log.Information("User disconnected with connection name:" + data);
-        //    _userService.DeleteUser(Context.ConnectionId);
-        //    UserDisconnected();
-        //    return Clients.Group(group).SendAsync("Disconnect", data);
-        //}
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
             var user = _userService.GetUserByConnectionId(Context.ConnectionId);
-            var roomId = user.RoomId;
-            Groups.RemoveFromGroupAsync(roomId, Context.ConnectionId);
-            _userService.DeleteUserFromRoom(user.Name);
-            return Clients.Group(roomId).SendAsync("Disconnect", user.Name);
+            if (user != null)
+            {
+                var roomId = user.RoomId;
+                Groups.RemoveFromGroupAsync(roomId, Context.ConnectionId);
+                _userService.DeleteUserFromRoom(user.Name);
+            }
+            return null;
         }
 
-        //public Task UserDisconnected()
-        //{
-        //    _userService.DeleteUser(Context.ConnectionId);
-        //    return Clients.Caller.SendAsync("UserDisconnect");
-        //}
+        public Task NotifyAdminRole()
+        {
+            var user = _userService.GetUserByConnectionId(Context.ConnectionId);
+            if (user != null)
+            {
+                var roomId = user.RoomId;
+                return Clients.Group(roomId).SendAsync("NotifyAdminRole", user.Name);
+            }
+            return null;
+        }
 
     }
 }
+

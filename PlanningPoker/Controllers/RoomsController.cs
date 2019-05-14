@@ -84,7 +84,5 @@ namespace PlanningPoker.Controllers
             return Ok();
         }
 
-        [HttpPost("{id}/Roles")]
-        public ActionResult<IEnumerable<string>> GetRolesList([FromBody] string[] users, string id) => Ok(_userService.GetRoles(users, id));
     }
 }

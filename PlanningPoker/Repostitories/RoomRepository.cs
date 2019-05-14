@@ -8,7 +8,7 @@ using PlanningPoker.Models;
 
 namespace PlanningPoker.Repostitories
 {
-    public class RoomRepository:IRoomsRepository
+    public class RoomRepository : IRoomsRepository
     {
         private readonly PokerContext _context;
 
@@ -18,8 +18,7 @@ namespace PlanningPoker.Repostitories
         }
         public async Task<Room> AddAsync(Room entity)
         {
-            _context.Rooms.Add(entity);
-            await _context.SaveChangesAsync();
+            await _context.Rooms.AddAsync(entity);
             return entity;
         }
 
@@ -27,7 +26,6 @@ namespace PlanningPoker.Repostitories
         {
             var entity = _context.Rooms.First(x => x.Id == id);
             _context.Rooms.Remove(entity);
-             _context.SaveChanges();
         }
 
         public Room GetByIdAsync(string id)
@@ -40,19 +38,14 @@ namespace PlanningPoker.Repostitories
             return _context.Rooms.AsNoTracking().FirstOrDefault(x => x.Name == name);
         }
 
-        public Task UpdateAsync(Room entity)
+        public void UpdateAsync(Room entity)
         {
             _context.Rooms.Update(entity);
-            return _context.SaveChangesAsync();
         }
 
         public Task<List<Room>> GetRoomsAsync()
         {
             return _context.Rooms.AsNoTracking().ToListAsync();
-        }
-        public void Dispose()
-        {
-            _context.Dispose();
         }
     }
 }

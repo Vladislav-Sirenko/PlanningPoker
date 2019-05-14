@@ -18,7 +18,7 @@ namespace PlanningPoker.Models
         public string Id { get; set; }
         public string Name { get; set; }
         public string CreatorName { get; set; }
+        public bool SessionEnded { get; set; }
         public ICollection<User> Users { get; set; }
     }
 }
-    

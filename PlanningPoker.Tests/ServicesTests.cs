@@ -23,6 +23,7 @@ namespace PlanningPoker.Tests
         private readonly IUserRepository _userRepository;
         private readonly IRoomsRepository _roomsRepository;
         private readonly IHubContext<LoopyHub> _hubContext;
+        private readonly IUnitOfWork _unitOfWork;
         private const string One = "1";
         private readonly Room _room = new Room() { Id = One, Name = One, CreatorName = One };
 
@@ -42,7 +43,8 @@ namespace PlanningPoker.Tests
             _userRepository = Substitute.For<IUserRepository>();
             _roomsRepository = Substitute.For<IRoomsRepository>();
             _hubContext = Substitute.For<IHubContext<LoopyHub>>();
-            _sut = new UserService(_hubContext, _roomsRepository, _userRepository);
+            _unitOfWork = Substitute.For<IUnitOfWork>();
+            _sut = new UserService(_hubContext, _unitOfWork, _roomsRepository, _userRepository);
         }
 
 
@@ -64,14 +66,6 @@ namespace PlanningPoker.Tests
             // Assert
             Received.InOrder(() => _userRepository.AddAsync(_user));
             Assert.Single(_userRepository.ReceivedCalls());
-        }
-        [Fact]
-        public void GetVotesForRoom_should_return_UserVote_If_Votes_Were_added()
-        {
-            // Act
-            _sut.GetRoles(new string[2], One);
-            // Assert
-            Assert.Single(_hubContext.ReceivedCalls());
         }
         [Fact]
         public void AddUserConnection_when_User_Doesnt_exist_in_db()

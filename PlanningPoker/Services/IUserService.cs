@@ -18,9 +18,7 @@ namespace PlanningPoker.Services
         //   void AddUserToGroup(string connectionId, string roomName);
         List<User> GetUsersByRoom(string id);
         void GetVotesForRoom(string id);
-
-        string GetRoleForRoom(string userId, string roomId);
-        IEnumerable<string> GetRoles(string[] users, string id);
+        bool CheckSessionState(string id);
         string GetRoomByUserName(string userName);
         User AddUser(User user);
         User GetUserByConnectionId(string id);

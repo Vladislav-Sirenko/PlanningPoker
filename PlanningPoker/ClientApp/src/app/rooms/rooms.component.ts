@@ -16,20 +16,11 @@ export class RoomsComponent implements OnInit {
   @Input() userName: string;
   ngOnInit() {
     this.userService.getRooms().subscribe(rooms => {
-      for (const room in rooms) {
-        if (room) {
-          this.rooms.push(new Room(rooms[room].id, rooms[room].name));
-        }
-      }
+      this.rooms = rooms;
     });
     this.userService.roomsChanged.subscribe(() => {
       this.userService.getRooms().subscribe(rooms => {
-        this.rooms = [];
-        for (const room in rooms) {
-          if (room) {
-            this.rooms.push(rooms[room]);
-          }
-        }
+        this.rooms = rooms;
       });
     });
   }
@@ -41,10 +32,10 @@ export class RoomsComponent implements OnInit {
   deleteRoom(id: string) {
     this.userService.deleteRoom(id);
   }
-  joinRoom(id: string, name: string) {
+  joinRoom(id: string, name: string, creatorName: string) {
     // tslint:disable-next-line:quotemark
     this.userService.addUserToRoom(id, sessionStorage.getItem("UserName"));
-    this.roouter.navigate(['room', id], { queryParams: { id: id, name: name } });
+    this.roouter.navigate(['room', id], { queryParams: { id: id, name: name, creatorName: creatorName } });
   }
   inRoom(): boolean {
     return window.location.href.includes('/room');

@@ -11,35 +11,35 @@ namespace PlanningPoker.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
-        private IUserService _userService;
-        public UserController(IUserService userService)
+        private readonly IUserService _userService;
+        public UsersController(IUserService userService)
         {
             _userService = userService;
         }
-        // GET: api/User
+        // GET: api/Users
         [HttpGet]
-        public  ActionResult  Get()
+        public IEnumerable<string> Get()
         {
-            return Ok();
+            return new string[] { "value1", "value2" };
         }
 
-        // GET: api/User/5
+        // GET: api/Users/5
         [HttpGet("{id}", Name = "Get")]
-        public ActionResult Get(int id)
+        public string Get(int id)
         {
-            return Ok();
+            return "value";
         }
 
-        // POST: api/User
+        // POST: api/Users
         [HttpPost]
         public ActionResult<User> Post([FromBody] User user)
         {
             return Ok(_userService.AddUser(user));
         }
 
-        // PUT: api/User/5
+        // PUT: api/Users/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {

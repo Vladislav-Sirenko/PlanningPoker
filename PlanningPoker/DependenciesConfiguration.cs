@@ -16,6 +16,7 @@ namespace PlanningPoker
             serviceCollection.AddTransient<IDbContextOptionsProvider<PokerContext>, DbContextOptionsProvider<PokerContext>>();
             serviceCollection.AddTransient<IUserRepository, UserRepository>();
             serviceCollection.AddTransient<IRoomsRepository, RoomRepository>();
+            serviceCollection.AddTransient<IUnitOfWork, UnitOfWork>();
             return serviceCollection;
         }
     }

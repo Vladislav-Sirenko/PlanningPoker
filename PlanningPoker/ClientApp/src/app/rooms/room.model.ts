@@ -6,5 +6,6 @@ export class Room {
     id: string;
     name: string;
     creatorName: string;
+    sessionEnded: boolean;
 }
 
