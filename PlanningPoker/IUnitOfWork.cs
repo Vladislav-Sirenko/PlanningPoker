@@ -5,6 +5,6 @@ namespace PlanningPoker
 {
     public interface IUnitOfWork : IDisposable
     {
-        void CompleteAsync();
+        void Complete();
     }
 }

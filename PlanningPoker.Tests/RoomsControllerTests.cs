@@ -39,7 +39,7 @@ namespace PlanningPoker.Tests
             //Arrange
             var client = Factory.CreateClient();
             //Act
-            var response = await client.PostAsync("api/Rooms/1/ResetVotes", null);
+            var response = await client.DeleteAsync("api/Rooms/1/Votes");
             //Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -85,8 +85,8 @@ namespace PlanningPoker.Tests
             var content = new StringContent(serializedObject);
 
             //Act
-            await client.PostAsync("api/User", content);
-            var response = await client.GetAsync("api/User");
+            await client.PostAsync("api/Users", content);
+            var response = await client.GetAsync("api/Users");
 
             //Assert
             response.EnsureSuccessStatusCode();

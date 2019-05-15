@@ -10,12 +10,7 @@ namespace PlanningPoker.Services
     {
         void AddVote(string name, int vote);
         void ResetVote(string name);
-    //    void DeleteUser(string id);
         User AddUserConnection(string id, string roomId, string userName);
-        Task<Room> AddRoom(Room room);
-        void DeleteRoom(string id);
-        Task<List<Room>> GetRooms();
-        //   void AddUserToGroup(string connectionId, string roomName);
         List<User> GetUsersByRoom(string id);
         void GetVotesForRoom(string id);
         bool CheckSessionState(string id);

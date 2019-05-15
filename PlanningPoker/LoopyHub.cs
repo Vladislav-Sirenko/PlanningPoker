@@ -46,12 +46,13 @@ namespace PlanningPoker
         public Task NotifyAdminRole()
         {
             var user = _userService.GetUserByConnectionId(Context.ConnectionId);
-            if (user != null)
+            if (user == null)
             {
-                var roomId = user.RoomId;
-                return Clients.Group(roomId).SendAsync("NotifyAdminRole", user.Name);
+                return null;
             }
-            return null;
+            var roomId = user.RoomId;
+            return Clients.Group(roomId).SendAsync("NotifyAdminRole", user.Name);
+
         }
 
     }

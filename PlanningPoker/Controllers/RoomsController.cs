@@ -17,16 +17,18 @@ namespace PlanningPoker.Controllers
     public class RoomsController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IRoomService _roomService;
 
-        public RoomsController(IUserService userService, PokerContext context)
+        public RoomsController(IUserService userService, PokerContext context,IRoomService roomService)
         {
             _userService = userService;
+            _roomService = roomService;
         }
 
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            var rooms = await _userService.GetRooms();
+            var rooms = await _roomService.GetRooms();
             return Ok(rooms);
         }
 
@@ -35,7 +37,7 @@ namespace PlanningPoker.Controllers
         {
             if (room != null)
             {
-                await _userService.AddRoom(room);
+                await _roomService.AddRoom(room);
                 return Ok();
             }
 
@@ -47,7 +49,7 @@ namespace PlanningPoker.Controllers
         {
             if (id != null)
             {
-                _userService.DeleteRoom(id);
+                _roomService.DeleteRoom(id);
                 return Ok();
             }
             return BadRequest();

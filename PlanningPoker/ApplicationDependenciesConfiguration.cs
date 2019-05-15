@@ -12,7 +12,7 @@ namespace PlanningPoker
         public static IServiceCollection RegisterApplicationDependencies(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<IUserService, UserService>();
-
+            serviceCollection.AddTransient<IRoomService, RoomService>();
             return serviceCollection;
         }
     }

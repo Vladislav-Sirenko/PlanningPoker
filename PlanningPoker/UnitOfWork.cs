@@ -15,7 +15,7 @@ namespace PlanningPoker
             _dbContext = dbContext;
         }
 
-        public void CompleteAsync()
+        public void Complete()
         {
             _dbContext.SaveChanges();
         }
