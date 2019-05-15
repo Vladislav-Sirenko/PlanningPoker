@@ -20,9 +20,5 @@ namespace PlanningPoker
             _dbContext.SaveChanges();
         }
 
-        public void Dispose()
-        {
-            _dbContext.Dispose();
-        }
     }
 }

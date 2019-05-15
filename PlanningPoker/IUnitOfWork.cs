@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace PlanningPoker
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork 
     {
         void Complete();
     }
