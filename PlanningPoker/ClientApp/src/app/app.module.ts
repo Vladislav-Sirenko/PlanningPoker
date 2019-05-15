@@ -13,6 +13,7 @@ import { UserService } from './user.service';
 import { RoomsComponent } from './rooms/rooms.component';
 import { InjectionToken } from '@angular/core';
 import { MessageComponent } from './message/message.component';
+import { ToasterModule } from './toast';
 export const BASE_URL = new InjectionToken<string>('BASE_URL');
 
 @NgModule({
@@ -29,6 +30,7 @@ export const BASE_URL = new InjectionToken<string>('BASE_URL');
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
+    ToasterModule,
     RouterModule.forRoot([
       { path: 'app', component: AppComponent },
       {

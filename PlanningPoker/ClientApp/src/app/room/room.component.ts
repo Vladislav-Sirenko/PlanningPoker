@@ -4,6 +4,7 @@ import { UserService } from '../user.service';
 import { UserVote } from '../userVote.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '../user.model';
+import { ToastService } from '../toast/toast.service';
 @Component({
   selector: 'app-room',
   templateUrl: './room.component.html',
@@ -48,7 +49,7 @@ export class RoomComponent implements OnInit {
               this.roles[this.users.indexOf(user)] = 'Guest';
               if (user.vote) {
                 this.Votes[this.users.indexOf(user)] = '✔';
-              } else {this.Votes[this.users.indexOf(user)] = ''; }
+              } else { this.Votes[this.users.indexOf(user)] = ''; }
             }
             if (sessionStorage.getItem('UserName') === this.creatorName) {
               this.userService.notifyAdminRole();
@@ -56,16 +57,19 @@ export class RoomComponent implements OnInit {
           });
         });
     this.userService.adminJoined.subscribe(name => {
+      this.toaster.success(name + ' Joined room as Admin');
       const user = this.users.find(x => x.name.toLowerCase() === name.toLowerCase());
       const index = this.users.indexOf(user);
-      this.roles[index] = 'Admin';
+      this.roles[index] = ' Admin';
     });
     this.userService.voted.subscribe((name) => {
+      this.toaster.success(name + ' Voted');
       const user = this.users.find(x => x.name === name);
       this.Votes[this.users.indexOf(user)] = '✔';
     });
     this.userService.finishVoting
       .subscribe(result => {
+        this.toaster.success(' Voting Finished');
         this.sessionEnded = true;
         for (const name in result) {
           if (name) {
@@ -77,6 +81,7 @@ export class RoomComponent implements OnInit {
     this.userService.disconnected
       .subscribe(
         (name) => {
+          this.toaster.success(name + ' Disconnected');
           const user = this.users.find(x => x.name === name);
           const index = this.users.indexOf(user);
           this.roles.splice(index, 1);
@@ -86,6 +91,7 @@ export class RoomComponent implements OnInit {
     this.userService.cleared
       .subscribe(
         () => {
+          this.toaster.success(' Voting reseted');
           this.Votes = [];
           this.votesCount = 0;
           this.sessionEnded = false;
@@ -128,7 +134,7 @@ export class RoomComponent implements OnInit {
     return this.sessionEnded === true ? user.vote : '';
   }
 
-  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute) {
+  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private toaster: ToastService ) {
     this.route.queryParams.subscribe(params => {
       this.name = params['name'];
       this.id = params['id'];
