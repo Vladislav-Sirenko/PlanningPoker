@@ -1,17 +1,15 @@
-
-
-#message{
+#message {
     float: left;
 }
 
-#user { 
+#user {
     cursor: pointer;
 }
 
-#messagebox{
-    height:200px auto; 
-    
+#messagebox {
+    height: 200px auto;
 }
+
 p {
     float: left;
     padding-left: 10px;

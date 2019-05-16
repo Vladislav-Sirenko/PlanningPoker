@@ -8,7 +8,7 @@ namespace PlanningPoker.Repostitories
 {
     public interface IRoomsRepository
     {
-        Task<Room> AddAsync(Room entity);
+        Task AddAsync(Room entity);
 
         void DeleteAsync(string id);
 

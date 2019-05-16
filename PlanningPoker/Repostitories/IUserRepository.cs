@@ -12,11 +12,11 @@ namespace PlanningPoker.Repostitories
 
         void DeleteAsync(string id);
 
-        User GetByNameAsync(string name);
+        Task<User> GetByNameAsync(string name);
 
-        void UpdateAsync(User entity);
-        void UpdateRangeAsync(List<User> entity);
-        IEnumerable<User> GetUsersByRoomId(string id);
+        void Update(User entity);
+        void UpdateRange(IEnumerable<User> entity);
+        IReadOnlyCollection<User> GetUsersByRoomId(string id);
         User GetUserByConnectionId(string id);
         void DeleteUserFromRoom(string userName);
     }

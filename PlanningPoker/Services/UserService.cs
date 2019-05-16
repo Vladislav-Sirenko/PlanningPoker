@@ -22,13 +22,13 @@ namespace PlanningPoker.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async void AddVote(string name, int vote)
+        public async Task AddVoteAsync(string name, int vote)
         {
-            var user = _userRepository.GetByNameAsync(name);
+            var user = await _userRepository.GetByNameAsync(name);
             user.Vote = vote;
-            _userRepository.UpdateAsync(user);
+            _userRepository.Update(user);
             var room = _roomsRepository.GetByIdAsync(user.RoomId);
-            _unitOfWork.Complete();
+            await _unitOfWork.CompleteAsync();
             await _hubContext.Clients.Group(room.Id).SendAsync("Vote", user.Name);
         }
 
@@ -37,7 +37,7 @@ namespace PlanningPoker.Services
             return _userRepository.GetUsersByRoomId(id).ToList();
         }
 
-        public async void GetVotesForRoom(string id)
+        public async Task GetVotesForRoomAsync(string id)
         {
             if (id == null)
                 return;
@@ -50,12 +50,13 @@ namespace PlanningPoker.Services
             {
                 if (user.Vote != null) votes.Add(user.Name, user.Vote.Value);
             }
-            _unitOfWork.Complete();
+
+            await _unitOfWork.CompleteAsync();
             await _hubContext.Clients.Group(room.Id).SendAsync("GetVotes", votes);
         }
 
 
-        public async void ResetVote(string id)
+        public async Task ResetVoteAsync(string id)
         {
             var room = _roomsRepository.GetByIdAsync(id);
             room.SessionEnded = false;
@@ -65,21 +66,21 @@ namespace PlanningPoker.Services
             {
                 user.Vote = null;
             }
-            _userRepository.UpdateRangeAsync(userlist);
-            _unitOfWork.Complete();
+            _userRepository.UpdateRange(userlist);
+            await _unitOfWork.CompleteAsync();
             await _hubContext.Clients.Group(id).SendAsync("ResetVotes");
         }
 
-        public User AddUserConnection(string id, string roomId, string userName)
+        public async Task<User> AddUserConnection(string id, string roomId, string userName)
         {
-            var user = _userRepository.GetByNameAsync(userName);
+            var user = await _userRepository.GetByNameAsync(userName);
             if (user != null)
             {
                 user.ConnectionId = id;
                 user.RoomId = roomId;
-                _userRepository.UpdateAsync(user);
+                _userRepository.Update(user);
             }
-            _unitOfWork.Complete();
+            await _unitOfWork.CompleteAsync();
             return user;
         }
 
@@ -87,12 +88,10 @@ namespace PlanningPoker.Services
         {
             return _roomsRepository.GetByIdAsync(id).SessionEnded;
         }
-       
-        
 
-        public string GetRoomByUserName(string userName)
+        public async Task <string> GetRoomByUserName(string userName)
         {
-            var user = _userRepository.GetByNameAsync(userName);
+            var user = await _userRepository.GetByNameAsync(userName);
             var room = _roomsRepository.GetByIdAsync(user.RoomId);
             return room.Name;
         }
@@ -100,7 +99,7 @@ namespace PlanningPoker.Services
         public User AddUser(User user)
         {
             var entity = _userRepository.AddAsync(user);
-            _unitOfWork.Complete();
+            _unitOfWork.CompleteAsync();
             return entity;
         }
 
@@ -108,15 +107,13 @@ namespace PlanningPoker.Services
         {
             return _userRepository.GetUserByConnectionId(id);
         }
-        public async void DeleteUserFromRoom(string userName)
+        public async Task DeleteUserFromRoomAsync(string userName)
         {
-            var roomName = GetRoomByUserName(userName);
+            var roomName = await GetRoomByUserName(userName);
             _userRepository.DeleteUserFromRoom(userName);
             var roomId = _roomsRepository.GetByNameAsync(roomName).Id;
-             _unitOfWork.Complete();
+             await _unitOfWork.CompleteAsync();
             await _hubContext.Clients.Group(roomId).SendAsync("Disconnect", userName);
-
-
         }
     }
 }

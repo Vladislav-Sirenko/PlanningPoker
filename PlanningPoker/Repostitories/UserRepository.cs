@@ -24,33 +24,33 @@ namespace PlanningPoker.Repostitories
 
         public void DeleteAsync(string name)
         {
-            var entity = _context.Users.FirstOrDefault(x => x.Name == name);
+            var entity = _context.Users.AsNoTracking().FirstOrDefault(x => x.Name == name);
             if (entity != null) _context.Users.Remove(entity);
         }
 
-        public IEnumerable<User> GetUsersByRoomId(string id)
+        public IReadOnlyCollection<User> GetUsersByRoomId(string id)
         {
-            var users = _context.Users.Where(x => x.RoomId == id);
+            var users = _context.Users.AsNoTracking().Where(x => x.RoomId == id).ToList().AsReadOnly();
             return users;
         }
 
         public User GetUserByConnectionId(string id)
         {
-            var user = _context.Users.FirstOrDefault(x => x.ConnectionId == id);
+            var user = _context.Users.AsNoTracking().FirstOrDefault(x => x.ConnectionId == id);
             return user;
         }
 
-        public User GetByNameAsync(string name)
+        public Task<User> GetByNameAsync(string name)
         {
-            return _context.Users.AsNoTracking().FirstOrDefault(x => x.Name == name);
+            return  _context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Name == name);
         }
 
-        public void UpdateAsync(User entity)
+        public void Update(User entity)
         {
             _context.Users.Update(entity);
         }
 
-        public void UpdateRangeAsync(List<User> entity)
+        public void UpdateRange(IEnumerable<User> entity)
         {
             _context.Users.UpdateRange(entity);
         }

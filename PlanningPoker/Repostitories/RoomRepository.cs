@@ -16,16 +16,15 @@ namespace PlanningPoker.Repostitories
         {
             _context = context;
         }
-        public async Task<Room> AddAsync(Room entity)
+        public Task AddAsync(Room entity)
         {
-            await _context.Rooms.AddAsync(entity);
-            return entity;
+           return  _context.Rooms.AddAsync(entity);
         }
 
         public void DeleteAsync(string id)
         {
-            var entity = _context.Rooms.First(x => x.Id == id);
-            _context.Rooms.Remove(entity);
+            var entity = _context.Rooms.AsNoTracking().FirstOrDefault(x => x.Id == id);
+            if (entity != null) _context.Rooms.Remove(entity);
         }
 
         public Room GetByIdAsync(string id)

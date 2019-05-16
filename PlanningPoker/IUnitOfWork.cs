@@ -5,6 +5,6 @@ namespace PlanningPoker
 {
     public interface IUnitOfWork 
     {
-        void Complete();
+        Task CompleteAsync();
     }
 }

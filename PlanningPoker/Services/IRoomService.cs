@@ -6,8 +6,8 @@ namespace PlanningPoker.Services
 {
     public interface IRoomService
     {
-        Task<Room> AddRoom(Room room);
-        void DeleteRoom(string id);
+        Task AddRoom(Room room);
+        Task DeleteRoomAsync(string id);
         Task<List<Room>> GetRooms();
     }
 }

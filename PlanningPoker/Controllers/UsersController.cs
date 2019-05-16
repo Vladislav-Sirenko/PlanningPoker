@@ -49,7 +49,7 @@ namespace PlanningPoker.Controllers
         [HttpDelete("{id}")]
         public void Delete(string id)
         {
-            _userService.DeleteUserFromRoom(id);
+            _userService.DeleteUserFromRoomAsync(id);
         }
     }
 }

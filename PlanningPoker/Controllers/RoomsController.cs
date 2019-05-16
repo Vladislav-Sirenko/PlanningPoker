@@ -49,7 +49,7 @@ namespace PlanningPoker.Controllers
         {
             if (id != null)
             {
-                _roomService.DeleteRoom(id);
+                _roomService.DeleteRoomAsync(id);
                 return Ok();
             }
             return BadRequest();
@@ -68,21 +68,21 @@ namespace PlanningPoker.Controllers
         [HttpGet("{id}/Votes")]
         public ActionResult GetVotesByRoom(string id)
         {
-            _userService.GetVotesForRoom(id);
+            _userService.GetVotesForRoomAsync(id);
             return Ok();
         }
 
         [HttpDelete("{id}/Votes")]
         public ActionResult ResetVotesByRoom(string id)
         {
-            _userService.ResetVote(id);
+            _userService.ResetVoteAsync(id);
             return Ok();
         }
 
         [HttpPost("{id}/Votes")]
         public ActionResult UserVote([FromRoute] string id, [FromBody] int vote)
         {
-            _userService.AddVote(id, vote);
+            _userService.AddVoteAsync(id, vote);
             return Ok();
         }
 
