@@ -40,9 +40,9 @@ namespace PlanningPoker.Repostitories
             return user;
         }
 
-        public Task<User> GetByNameAsync(string name)
+        public User GetByNameAsync(string name)
         {
-            return  _context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Name == name);
+            return  _context.Users.AsNoTracking().FirstOrDefault(x => x.Name == name);
         }
 
         public void Update(User entity)

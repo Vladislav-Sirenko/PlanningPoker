@@ -12,7 +12,7 @@ namespace PlanningPoker.Repostitories
 
         void DeleteAsync(string id);
 
-        Task<User> GetByNameAsync(string name);
+        User GetByNameAsync(string name);
 
         void Update(User entity);
         void UpdateRange(IEnumerable<User> entity);

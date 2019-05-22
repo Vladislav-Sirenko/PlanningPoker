@@ -20,14 +20,14 @@ namespace PlanningPoker
 
         public async Task Join(string id, string userName)
         {
-            await _userService.AddUserConnection(Context.ConnectionId, id, userName);
+             _userService.AddUserConnection(Context.ConnectionId, id, userName);
             await Groups.AddToGroupAsync(Context.ConnectionId, id);
             var roomState = _userService.CheckSessionState(id);
             await Clients.Group(id).SendAsync("Join", roomState);
         }
         public async Task Send(string data)
         {
-            var group = await _userService.GetRoomByUserName(data.Split(":")[0]);
+            var group =  _userService.GetRoomByUserName(data.Split(":")[0]);
             await Clients.Group(group).SendAsync("Send", data);
         }
 

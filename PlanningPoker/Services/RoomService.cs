@@ -31,7 +31,7 @@ namespace PlanningPoker.Services
             }
             _userRepository.UpdateRange(users.ToList());
             _roomsRepository.DeleteAsync(id);
-            await _unitOfWork.CompleteAsync();
+            _unitOfWork.Complete();
             await _hubContext.Clients.All.SendAsync("DeleteRoom");
         }
         public async Task<List<Room>> GetRooms()
@@ -41,7 +41,7 @@ namespace PlanningPoker.Services
         public async Task AddRoom(Room room)
         {
             await _roomsRepository.AddAsync(room);
-            await _unitOfWork.CompleteAsync();
+            _unitOfWork.Complete();
             await _hubContext.Clients.All.SendAsync("AddRoom");
         }
 
