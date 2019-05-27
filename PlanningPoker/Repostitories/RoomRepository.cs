@@ -21,27 +21,27 @@ namespace PlanningPoker.Repostitories
            return  _context.Rooms.AddAsync(entity);
         }
 
-        public void DeleteAsync(string id)
+        public void Delete(string id)
         {
             var entity = _context.Rooms.AsNoTracking().FirstOrDefault(x => x.Id == id);
             if (entity != null) _context.Rooms.Remove(entity);
         }
 
-        public Room GetByIdAsync(string id)
+        public Room GetById(string id)
         {
             return _context.Rooms.AsNoTracking().FirstOrDefault(x => x.Id == id);
         }
 
-        public Room GetByNameAsync(string name)
+        public Room GetByName(string name)
         {
             return _context.Rooms.AsNoTracking().FirstOrDefault(x => x.Name == name);
         }
 
-        public void UpdateAsync(Room entity)
+        public void Update(Room entity)
         {
             _context.Rooms.Update(entity);
         }
-
+        
         public Task<List<Room>> GetRoomsAsync()
         {
             return _context.Rooms.AsNoTracking().ToListAsync();

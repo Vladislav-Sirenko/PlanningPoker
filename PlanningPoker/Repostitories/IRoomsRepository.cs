@@ -10,12 +10,12 @@ namespace PlanningPoker.Repostitories
     {
         Task AddAsync(Room entity);
 
-        void DeleteAsync(string id);
+        void Delete(string id);
 
-        Room GetByIdAsync(string id);
+        Room GetById(string id);
 
-        void UpdateAsync(Room entity);
+        void Update(Room entity);
         Task<List<Room>> GetRoomsAsync();
-        Room GetByNameAsync(string name);
+        Room GetByName(string name);
     }
 }

@@ -25,8 +25,7 @@ namespace PlanningPoker.Tests
             //Arrange
             var client = Factory.CreateClient();
             var room = new Room() { Id = "1", CreatorName = "2", Name = "Room" };
-            string serializedObject = JsonConvert.SerializeObject(room);
-            var content = new StringContent(serializedObject);
+            var content = GetResponseContent(room);
             //Act
             await client.PostAsync("api/Rooms", content);
             var response = await client.GetAsync("api/Rooms");
@@ -81,8 +80,7 @@ namespace PlanningPoker.Tests
                 Email = "123",
                 Password = ""
             };
-            string serializedObject = JsonConvert.SerializeObject(user);
-            var content = new StringContent(serializedObject);
+            var content = GetResponseContent(user);
 
             //Act
             await client.PostAsync("api/Users", content);
@@ -90,6 +88,13 @@ namespace PlanningPoker.Tests
 
             //Assert
             response.EnsureSuccessStatusCode();
+        }
+
+        public StringContent GetResponseContent(object Object)
+        {
+            string serializedObject = JsonConvert.SerializeObject(Object);
+            var content = new StringContent(serializedObject);
+            return content;
         }
     }
 }

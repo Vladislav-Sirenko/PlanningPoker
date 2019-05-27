@@ -22,7 +22,7 @@ namespace PlanningPoker.Repostitories
             return entity;
         }
 
-        public void DeleteAsync(string name)
+        public void Delete(string name)
         {
             var entity = _context.Users.AsNoTracking().FirstOrDefault(x => x.Name == name);
             if (entity != null) _context.Users.Remove(entity);

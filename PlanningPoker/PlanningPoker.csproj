@@ -61,14 +61,6 @@
     <Compile Remove="Migrations\20190410183830_first.Designer.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Serilog.Settings.Configuration">
-      <HintPath>..\..\..\.nuget\packages\serilog.settings.configuration\2.4.0\lib\net451\Serilog.Settings.Configuration.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.RollingFile">
-      <HintPath>..\..\..\.nuget\packages\serilog.sinks.rollingfile\3.3.0\lib\net45\Serilog.Sinks.RollingFile.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->

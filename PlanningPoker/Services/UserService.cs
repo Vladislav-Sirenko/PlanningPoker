@@ -26,7 +26,7 @@ namespace PlanningPoker.Services
             var user = _userRepository.GetByNameAsync(name);
             user.Vote = vote;
             _userRepository.Update(user);
-            var room = _roomsRepository.GetByIdAsync(user.RoomId);
+            var room = _roomsRepository.GetById(user.RoomId);
             _unitOfWork.Complete();
             await _hubContext.Clients.Group(room.Id).SendAsync("Vote", user.Name);
         }
@@ -40,9 +40,9 @@ namespace PlanningPoker.Services
         {
             if (id == null)
                 return;
-            var room = _roomsRepository.GetByIdAsync(id);
+            var room = _roomsRepository.GetById(id);
             room.SessionEnded = true;
-            _roomsRepository.UpdateAsync(room);
+            _roomsRepository.Update(room);
             var users = _userRepository.GetUsersByRoomId(id).ToList();
             Dictionary<string, int> votes = new Dictionary<string, int>();
             foreach (var user in users)
@@ -57,9 +57,9 @@ namespace PlanningPoker.Services
 
         public async Task ResetVoteAsync(string id)
         {
-            var room = _roomsRepository.GetByIdAsync(id);
+            var room = _roomsRepository.GetById(id);
             room.SessionEnded = false;
-            _roomsRepository.UpdateAsync(room);
+            _roomsRepository.Update(room);
             var userlist = _userRepository.GetUsersByRoomId(id).ToList();
             foreach (var user in userlist)
             {
@@ -85,13 +85,13 @@ namespace PlanningPoker.Services
 
         public bool CheckSessionState(string id)
         {
-            return _roomsRepository.GetByIdAsync(id).SessionEnded;
+            return _roomsRepository.GetById(id).SessionEnded;
         }
 
         public string GetRoomByUserName(string userName)
         {
             var user = _userRepository.GetByNameAsync(userName);
-            var room = _roomsRepository.GetByIdAsync(user.RoomId);
+            var room = _roomsRepository.GetById(user.RoomId);
             return room.Name;
         }
 
@@ -110,7 +110,7 @@ namespace PlanningPoker.Services
         {
             var roomName =  GetRoomByUserName(userName);
             _userRepository.DeleteUserFromRoom(userName);
-            var roomId = _roomsRepository.GetByNameAsync(roomName).Id;
+            var roomId = _roomsRepository.GetByName(roomName).Id;
             _unitOfWork.Complete();
             await _hubContext.Clients.Group(roomId).SendAsync("Disconnect", userName);
         }

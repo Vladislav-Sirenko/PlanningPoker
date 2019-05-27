@@ -10,7 +10,7 @@ namespace PlanningPoker.Repostitories
     {
         User AddAsync(User entity);
 
-        void DeleteAsync(string id);
+        void Delete(string id);
 
         User GetByNameAsync(string name);
 

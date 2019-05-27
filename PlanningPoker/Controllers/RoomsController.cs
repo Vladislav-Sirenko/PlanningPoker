@@ -68,8 +68,7 @@ namespace PlanningPoker.Controllers
         [HttpGet("{id}/Votes")]
         public ActionResult GetVotesByRoom(string id)
         {
-            _userService.GetVotesForRoomAsync(id);
-            return Ok();
+            return Ok(_userService.GetVotesForRoomAsync(id));
         }
 
         [HttpDelete("{id}/Votes")]

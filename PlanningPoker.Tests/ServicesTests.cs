@@ -82,12 +82,12 @@ namespace PlanningPoker.Tests
         {
             // Arrange
             _userRepository.GetByNameAsync(One).Returns(_user);
-            _roomsRepository.GetByIdAsync(One).Returns(_room);
+            _roomsRepository.GetById(One).Returns(_room);
             // Act
             _sutForUserService.AddVoteAsync(One, 1);
             //Assert
             _userRepository.Received(1).GetByNameAsync(Arg.Any<string>());
-            _roomsRepository.Received(1).GetByIdAsync(Arg.Any<string>());
+            _roomsRepository.Received(1).GetById(Arg.Any<string>());
             _userRepository.Received(1).Update(Arg.Any<User>());
             _hubContext.Received(1).Clients.All.SendAsync(Arg.Any<string>());
         }
@@ -102,20 +102,20 @@ namespace PlanningPoker.Tests
             //Assert
             _userRepository.Received(1).GetUsersByRoomId(Arg.Any<string>());
             _userRepository.Received(1).UpdateRange(Arg.Any<List<User>>());
-            _roomsRepository.Received(1).DeleteAsync(Arg.Any<string>());
+            _roomsRepository.Received(1).Delete(Arg.Any<string>());
         }
         [Fact]
         public void UserRepository_DeleteUserFromRoom_Should_Call_When_DeleteUser_Called()
         {
             // Arrange
-            _roomsRepository.GetByIdAsync(One).Returns(_room);
+            _roomsRepository.GetById(One).Returns(_room);
             _userRepository.GetByNameAsync(One).Returns(_user);
-            _roomsRepository.GetByNameAsync(One).Returns(_room);
+            _roomsRepository.GetByName(One).Returns(_room);
             // Act
             _sutForUserService.DeleteUserFromRoomAsync(One);
             //Assert
             _userRepository.Received(1).DeleteUserFromRoom(Arg.Any<string>());
-            _roomsRepository.Received(1).GetByNameAsync(Arg.Any<string>());
+            _roomsRepository.Received(1).GetByName(Arg.Any<string>());
             _hubContext.Received(1).Clients.All.SendAsync(Arg.Any<string>());
         }
 
@@ -123,13 +123,13 @@ namespace PlanningPoker.Tests
         public void GetRoomByUserName_Should_Get_User_And_Room_Correspondent_To_User()
         {
             // Arrange
-            _roomsRepository.GetByIdAsync(One).Returns(new Room() { Name = One });
+            _roomsRepository.GetById(One).Returns(new Room() { Name = One });
             _userRepository.GetByNameAsync(One).Returns(new User() { RoomId = One });
             // Act
             _sutForUserService.GetRoomByUserName(One);
             //Assert
             _userRepository.Received(1).GetByNameAsync(Arg.Any<string>());
-            _roomsRepository.Received(1).GetByIdAsync(Arg.Any<string>());
+            _roomsRepository.Received(1).GetById(Arg.Any<string>());
         }
 
         [Fact]
@@ -148,12 +148,12 @@ namespace PlanningPoker.Tests
         {
             // Arrange
             _userRepository.GetUsersByRoomId(One).Returns(new List<User>());
-            _roomsRepository.GetByIdAsync(One).Returns(new Room());
+            _roomsRepository.GetById(One).Returns(new Room());
             // Act
             _sutForUserService.ResetVoteAsync(One);
             //Assert
             _userRepository.Received(1).UpdateRange(Arg.Any<List<User>>());
-            _roomsRepository.Received(1).UpdateAsync(Arg.Any<Room>());
+            _roomsRepository.Received(1).Update(Arg.Any<Room>());
         }
     }
 }
