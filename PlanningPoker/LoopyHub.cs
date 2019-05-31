@@ -34,7 +34,7 @@ namespace PlanningPoker
         public override Task OnDisconnectedAsync(Exception exception)
         {
             var user = _userService.GetUserByConnectionId(Context.ConnectionId);
-            if (user != null)
+            if (user?.RoomId != null)
             {
                 var roomId = user.RoomId;
                 Groups.RemoveFromGroupAsync(roomId, Context.ConnectionId);
@@ -54,6 +54,7 @@ namespace PlanningPoker
             return Clients.Group(roomId).SendAsync("NotifyAdminRole", user.Name);
 
         }
+
 
     }
 }

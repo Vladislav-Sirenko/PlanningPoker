@@ -23,6 +23,7 @@ export class UserService {
   private _userDisconnect = new Subject<void>();
   private _roomRoles = new Subject<void>();
   private _adminJoined = new Subject<string>();
+  private _roomDeleted = new Subject<void>();
   public roles = this._roles.asObservable();
   public cleared = this._cleared.asObservable();
   public changed = this._changed.asObservable();
@@ -31,6 +32,7 @@ export class UserService {
   public send = this._send.asObservable();
   public join = this._join.asObservable();
   public voted = this._voted.asObservable();
+  public roomDeleted = this._roomDeleted.asObservable();
   public disconnected = this._disconnected.asObservable();
   public finishVoting = this._finishVoting.asObservable();
   public roomRoles = this._roomRoles.asObservable();
@@ -85,6 +87,9 @@ export class UserService {
     });
     this._hubConnection.on('NotifyAdminRole', (name: string) => {
       this._adminJoined.next(name);
+    });
+    this._hubConnection.on('RoomDeleted', () => {
+      this._roomDeleted.next();
     });
   }
 

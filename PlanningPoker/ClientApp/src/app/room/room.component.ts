@@ -35,7 +35,7 @@ export class RoomComponent implements OnInit {
       this.router.navigate(['']);
       sessionStorage.removeItem('Unload');
     }
-    if (sessionStorage.getItem('UserName') === this.creatorName) {
+    if (sessionStorage.getItem('UserName').toLowerCase() === this.creatorName.toLowerCase()) {
       this.role = 'Admin';
     } else { this.role = 'Guest'; }
     this.votesCount = 0;
@@ -50,21 +50,25 @@ export class RoomComponent implements OnInit {
               if (user.vote) {
                 this.Votes[this.users.indexOf(user)] = '✔';
               } else { this.Votes[this.users.indexOf(user)] = ''; }
+              if (user.name.toLowerCase() === this.creatorName.toLowerCase()) {
+                this.roles[this.users.indexOf(user)] = 'Admin';
+              }
             }
-            if (sessionStorage.getItem('UserName') === this.creatorName) {
+            if (sessionStorage.getItem('UserName').toLowerCase() === this.creatorName.toLowerCase()) {
               this.userService.notifyAdminRole();
             }
+          }, err => {
+            this.toaster.error('Something went wrong ' + err);
           });
         });
     this.userService.adminJoined.subscribe(name => {
-      this.toaster.success(name + ' Joined room as Admin');
+      this.toaster.success(name + ' joined room as Admin');
       const user = this.users.find(x => x.name.toLowerCase() === name.toLowerCase());
       const index = this.users.indexOf(user);
       this.roles[index] = ' Admin';
     });
     this.userService.voted.subscribe((name) => {
-      this.toaster.success(name + ' Voted');
-      const user = this.users.find(x => x.name === name);
+      const user = this.users.find(x => x.name.toLowerCase() === name.toLowerCase());
       this.Votes[this.users.indexOf(user)] = '✔';
     });
     this.userService.finishVoting
@@ -73,20 +77,26 @@ export class RoomComponent implements OnInit {
         this.sessionEnded = true;
         for (const name in result) {
           if (name) {
-            const user = this.users.find(x => x.name === name);
-            user.vote = result[name];
+            const user = this.users.find(x => x.name.toLowerCase() === name.toLowerCase());
+            if (user) {
+              user.vote = result[name];
+            }
           }
         }
-      });
+      },
+        err => {
+          this.toaster.error('Something went wrong ' + err);
+        });
     this.userService.disconnected
       .subscribe(
         (name) => {
-          this.toaster.success(name + ' Disconnected');
-          const user = this.users.find(x => x.name === name);
+          const user = this.users.find(x => x.name.toLowerCase() === name.toLowerCase());
           const index = this.users.indexOf(user);
-          this.roles.splice(index, 1);
-          this.Votes.splice(index, 1);
-          this.users.splice(index, 1);
+          if (this.users.includes(user)) {
+            this.roles.splice(index, 1);
+            this.Votes.splice(index, 1);
+            this.users.splice(index, 1);
+          }
         });
     this.userService.cleared
       .subscribe(
@@ -97,6 +107,10 @@ export class RoomComponent implements OnInit {
           this.sessionEnded = false;
           sessionStorage.removeItem('UserVote');
         });
+    this.userService.roomDeleted.subscribe(() => {
+      sessionStorage.removeItem('UserVote');
+      this.router.navigate(['']);
+    });
   }
 
   isAdmin(): boolean {
@@ -115,12 +129,17 @@ export class RoomComponent implements OnInit {
 
   resetVotes() {
     sessionStorage.removeItem('UserVote');
+    for (const user of this.users) {
+      user.vote = null;
+    }
     this.userService.resetUserVotes(this.id);
   }
 
   logOut() {
     sessionStorage.removeItem('UserVote');
     this.userService.deleteUserFromRoom();
+    this.users = [];
+    this.roles = [];
     this.router.navigate(['']);
   }
 
@@ -134,7 +153,7 @@ export class RoomComponent implements OnInit {
     return this.sessionEnded === true ? user.vote : '';
   }
 
-  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private toaster: ToastService ) {
+  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private toaster: ToastService) {
     this.route.queryParams.subscribe(params => {
       this.name = params['name'];
       this.id = params['id'];

@@ -30,9 +30,12 @@ namespace PlanningPoker.Services
                 user.RoomId = null;
             }
             _userRepository.UpdateRange(users.ToList());
+            _unitOfWork.Complete();
             _roomsRepository.Delete(id);
             _unitOfWork.Complete();
             await _hubContext.Clients.All.SendAsync("DeleteRoom");
+            await _hubContext.Clients.Group(id).SendAsync("RoomDeleted");
+            
         }
         public async Task<List<Room>> GetRooms()
         {
