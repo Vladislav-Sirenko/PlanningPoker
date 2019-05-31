@@ -8,21 +8,22 @@ import { Observable } from 'rxjs/Observable';
 import { Room } from './rooms/room.model';
 @Injectable()
 export class UserService {
-
   _baseUrl: string;
   userVote = {};
   users: string[] = [];
   private _cleared = new Subject<void>();
   private _changed = new Subject<string>();
   private _disconnected = new Subject<string>();
-  private _join = new Subject<string>();
+  private _join = new Subject<boolean>();
   private _voted = new Subject<string>();
   private _roomChanged = new Subject<void>();
-  private _finishVoting = new Subject<void>();
+  private _finishVoting = new Subject<any>();
   private _send = new Subject<string>();
   private _roles = new Subject<string>();
   private _userDisconnect = new Subject<void>();
   private _roomRoles = new Subject<void>();
+  private _adminJoined = new Subject<string>();
+  private _roomDeleted = new Subject<void>();
   public roles = this._roles.asObservable();
   public cleared = this._cleared.asObservable();
   public changed = this._changed.asObservable();
@@ -31,9 +32,11 @@ export class UserService {
   public send = this._send.asObservable();
   public join = this._join.asObservable();
   public voted = this._voted.asObservable();
+  public roomDeleted = this._roomDeleted.asObservable();
   public disconnected = this._disconnected.asObservable();
   public finishVoting = this._finishVoting.asObservable();
   public roomRoles = this._roomRoles.asObservable();
+  public adminJoined = this._adminJoined.asObservable();
 
   private _hubConnection: signalR.HubConnection | undefined;
   constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
@@ -58,14 +61,14 @@ export class UserService {
     this._hubConnection.on('Vote', (name: string) => {
       this._voted.next(name);
     });
-    this._hubConnection.on('Send', (name: string) => {
-      this._send.next(name);
+    this._hubConnection.on('Send', (data) => {
+      this._send.next(data);
     });
-    this._hubConnection.on('GetVotes', () => {
-      this._finishVoting.next();
+    this._hubConnection.on('GetVotes', (votes) => {
+      this._finishVoting.next(votes);
     });
-    this._hubConnection.on('Join', (name: string) => {
-      this._join.next(name);
+    this._hubConnection.on('Join', (roomState: boolean) => {
+      this._join.next(roomState);
     });
     this._hubConnection.on('AddRoom', () => {
       this._roomChanged.next();
@@ -82,86 +85,83 @@ export class UserService {
     this._hubConnection.on('GetRolesForRoom', () => {
       this._roomRoles.next();
     });
+    this._hubConnection.on('NotifyAdminRole', (name: string) => {
+      this._adminJoined.next(name);
+    });
+    this._hubConnection.on('RoomDeleted', () => {
+      this._roomDeleted.next();
+    });
   }
 
 
   addUser(user: User) {
-    localStorage.setItem('UserName', user.Name);
-    const data = `${user.Name}`;
-    if (this._hubConnection) {
-      this._hubConnection.invoke('Connect', data);
-    }
+    sessionStorage.setItem('UserName', user.name);
+    this.http.post(this._baseUrl + 'api/Users', user).subscribe();
   }
-  deleteUser(user: string) {
-    localStorage.removeItem('UserName');
-    localStorage.removeItem('UserVote');
-    if (this._hubConnection) {
-      this._hubConnection.invoke('Disconnect', user);
-    }
-  }
+
   getUsers(id: string) {
-    return this.http.get<string[]>(this._baseUrl + 'api/Rooms/' + id + '/Users');
+    return this.http.get<User[]>(this._baseUrl + 'api/Rooms/' + id + '/Users');
   }
 
-  getUserVote(id: string): Observable<UserVote[]> {
-    return this.http.get<UserVote[]>(this._baseUrl + 'api/Rooms/' + id + '/Votes');
-  }
-
-  finishVote() {
-    if (this._hubConnection) {
-      this._hubConnection.invoke('GetVotes');
-    }
+  getUserVote(id: string) {
+    return this.http.get(this._baseUrl + 'api/Rooms/' + id + '/Votes');
   }
 
   resetUserVotes(id: string) {
-    this.http.post(this._baseUrl + 'api/Rooms/' + id + '/ResetVotes', id).subscribe();
-    if (this._hubConnection) {
-      this._hubConnection.invoke('ResetVotes');
-    }
+    this.http.delete(this._baseUrl + 'api/Rooms/' + id + '/Votes').subscribe();
   }
   sendMessage(data: string) {
     if (this._hubConnection) {
       this._hubConnection.invoke('Send', data);
     }
   }
-  addUserToRoom(roomName: string) {
+  addUserToRoom(id: string, userName: string) {
     if (this._hubConnection) {
-      this._hubConnection.invoke('Join', roomName);
+      this._hubConnection.invoke('Join', id, userName);
     }
   }
 
   addRoom(room: Room) {
-    const user = localStorage.getItem('UserName');
-    room.CreatorId = user;
+    const user = sessionStorage.getItem('UserName');
+    room.creatorName = user;
     this.http.post(this._baseUrl + 'api/Rooms', room).subscribe();
   }
   getRooms() {
     return this.http.get<Room[]>(this._baseUrl + 'api/Rooms');
   }
   getRoles(id: string) {
-    if (this._hubConnection) {
-      this._hubConnection.invoke('GetRole', id);
-    }
+    const userName = sessionStorage.getItem('UserName');
+    let params = new HttpParams();
+    params = params.append('id', id);
+    params = params.append('name', userName);
+    return this.http.get(this._baseUrl + 'api/Rooms/' + id + '/Role', { params: params });
   }
   deleteRoom(id: string) {
     return this.http.delete(this._baseUrl + 'api/Rooms/' + id).subscribe();
   }
 
-  addUserVote(userName: string, vote: number) {
-    const data = `${userName} voted`;
-    if (this._hubConnection) {
-      this._hubConnection.invoke('Vote', data);
-    }
-    this.http.post(this._baseUrl + 'api/Rooms/UserVote', { userName, vote }).subscribe();
-  }
-  logOut() {
-    if (this._hubConnection) {
-      this._hubConnection.invoke('UserDisconnected');
-    }
+  addUserVote(vote: number) {
+    const id = sessionStorage.getItem('UserName');
+    this.http.post(this._baseUrl + 'api/Rooms/' + id + '/Votes', vote).subscribe();
   }
   getRolesForRoom(users: string[], id) {
     return this.http.post(this._baseUrl + 'api/Rooms/' + id + '/Roles', users);
   }
+
+  deleteUserFromRoom() {
+    const user = sessionStorage.getItem('UserName');
+    this.http.delete(this._baseUrl + 'api/Users/' + user).subscribe();
+  }
+  logOut() {
+    this._userDisconnect.next();
+  }
+  notifyAdminRole() {
+    const user = sessionStorage.getItem('UserName');
+    if (this._hubConnection) {
+      this._hubConnection.invoke('NotifyAdminRole');
+    }
+  }
+
 }
 
 

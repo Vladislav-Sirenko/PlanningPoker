@@ -1,8 +1,14 @@
 export class User {
-    constructor(name: string, password: string) {
-      this.Password = password;
-      this.Name = name;
-    }
-    Password: string;
-    Name: string;
+  id: number;
+  name: string;
+  password: string;
+  email: string;
+  connectionId: string;
+  vote: number;
+  roomId: string;
+  constructor(name: string, password: string, email: string) {
+    this.password = password;
+    this.name = name;
+    this.email = email;
   }
+}

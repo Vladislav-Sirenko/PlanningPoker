@@ -10,8 +10,11 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { HeaderComponent } from './header/header.component';
 import { RoomComponent } from './room/room.component';
 import { UserService } from './user.service';
-import { MessageComponent } from './message/message.component';
 import { RoomsComponent } from './rooms/rooms.component';
+import { InjectionToken } from '@angular/core';
+import { MessageComponent } from './message/message.component';
+import { ToasterModule } from './toast';
+export const BASE_URL = new InjectionToken<string>('BASE_URL');
 
 @NgModule({
   declarations: [
@@ -27,12 +30,15 @@ import { RoomsComponent } from './rooms/rooms.component';
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
+    ToasterModule,
     RouterModule.forRoot([
       { path: 'app', component: AppComponent },
-      { path: 'room/:id', component: RoomComponent ,
-      data: {
-        type: 'edit'
-      } }
+      {
+        path: 'room/:id', component: RoomComponent,
+        data: {
+          type: 'edit'
+        }
+      }
     ])
   ],
   providers: [UserService],

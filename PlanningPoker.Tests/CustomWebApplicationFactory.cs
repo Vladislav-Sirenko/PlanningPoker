@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.InMemory;
+using NSubstitute;
 using PlanningPoker.Context;
 
 namespace PlanningPoker.Tests
@@ -13,31 +14,29 @@ namespace PlanningPoker.Tests
     {
         public CustomWebApplicationFactory()
         {
-            
-        }
-        protected override void ConfigureWebHost(IWebHostBuilder builder) =>
-            builder.ConfigureServices(ConfigureDbContexts);
 
+        }
         protected override TestServer CreateServer(IWebHostBuilder builder) =>
             new TestServer(
                 builder
                     .UseEnvironment("Development")
                     .UseContentRoot(System.IO.Directory.GetCurrentDirectory())
-                    .UseStartup<Startup>());
+                    .UseStartup<Startup>()
+                    .ConfigureTestServices(ConfigureDbContexts));
 
         private static void ConfigureDbContexts(IServiceCollection services)
         {
+            var optionsProvider = Substitute.For<IDbContextOptionsProvider<PokerContext>>();
             var serviceProvider = new ServiceCollection()
                 .AddEntityFrameworkInMemoryDatabase()
                 .BuildServiceProvider();
+            var builder = new DbContextOptionsBuilder<PokerContext>()
+                .UseInMemoryDatabase(nameof(PokerContext))
+                .UseInternalServiceProvider(serviceProvider);
 
-            services
-                .AddDbContext<PokerContext>(
-                    options =>
-                    {
-                        options.UseInMemoryDatabase(nameof(PokerContext));
-                        options.UseInternalServiceProvider(serviceProvider);
-                    });
+            optionsProvider.Options.Returns(builder.Options);
+
+            services.AddSingleton(optionsProvider);
         }
     }
 }

@@ -18,7 +18,7 @@ export class MessageComponent implements OnInit {
   }
 
   public sendMessage(): void {
-    this.userName = localStorage.getItem('UserName');
+    this.userName = sessionStorage.getItem('UserName');
     const data = `${this.userName}: ${this.message}`;
 
     this.userService.sendMessage(data);
@@ -27,21 +27,23 @@ export class MessageComponent implements OnInit {
   ngOnInit() {
 
     this.userService.changed.subscribe((name) => {
-    const received = `${name} connected`;
-    this.messages.push(received);
+      const received = `${name} connected`;
+      this.messages.push(received);
     });
     this.userService.voted.subscribe((name) => {
-      const received = `${name}`;
+      const received = `${name} voted`;
       this.messages.push(received);
-      });
+    });
 
-      this.userService.send.subscribe((data) => {
-        const received = `${data}`;
+    this.userService.send.subscribe((data) => {
+      const received = `${data}`;
+      this.messages.push(received);
+    });
+    this.userService.disconnected.subscribe((data) => {
+      const received = `${data} disconnected`;
+      if (this.messages[this.messages.length - 1] !== received) {
         this.messages.push(received);
-        });
-        this.userService.disconnected.subscribe((data) => {
-          const received = `${data} disconnected`;
-          this.messages.push(received);
-          });
+      }
+    });
   }
 }

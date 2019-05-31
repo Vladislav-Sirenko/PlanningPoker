@@ -11,7 +11,7 @@ export class AppComponent implements OnInit {
   constructor(private userService: UserService) { }
 
   ngOnInit(): void {
-    this.userName = localStorage.getItem('UserName');
+    this.userName = sessionStorage.getItem('UserName');
     this.userService.userDisconnect.subscribe(() => {
        this.userName = null;
     });

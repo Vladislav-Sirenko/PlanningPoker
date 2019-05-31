@@ -17,28 +17,30 @@ namespace PlanningPoker.Controllers
     public class RoomsController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IRoomService _roomService;
 
-        public RoomsController(IUserService userService)
+        public RoomsController(IUserService userService, PokerContext context,IRoomService roomService)
         {
             _userService = userService;
+            _roomService = roomService;
         }
 
         [HttpGet]
-        public ActionResult Get()
+        public async Task<ActionResult> Get()
         {
-            var rooms = _userService.GetRooms();
+            var rooms = await _roomService.GetRooms();
             return Ok(rooms);
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] Room room)
+        public async Task<ActionResult> Post([FromBody] Room room)
         {
             if (room != null)
             {
-                room.CreatorId = _userService.GetConnectionByUserName(room.CreatorId);
-                _userService.AddRoom(room);
+                await _roomService.AddRoom(room);
                 return Ok();
             }
+
             return BadRequest();
         }
 
@@ -47,32 +49,41 @@ namespace PlanningPoker.Controllers
         {
             if (id != null)
             {
-                _userService.DeleteRoom(id);
+                _roomService.DeleteRoomAsync(id);
                 return Ok();
             }
             return BadRequest();
         }
 
-        [HttpGet("{id}/users")]
-        public ActionResult GetUsersByRoom(string id)
+        [HttpGet("{id}/Users")]
+        public ActionResult<List<User>> GetUsersByRoom(string id)
         {
             if (id != null)
             {
                 return Ok(_userService.GetUsersByRoom(id));
             }
-            return  BadRequest();
+            return BadRequest();
         }
 
         [HttpGet("{id}/Votes")]
-        public ActionResult GetVotesByRoom(string id) => Ok(_userService.GetVotesForRoom(id));
+        public ActionResult GetVotesByRoom(string id)
+        {
+            return Ok(_userService.GetVotesForRoomAsync(id));
+        }
 
-        [HttpPost("{id}/ResetVotes")]
-        public void ResetVotesByRoom(string id) => _userService.ResetVote(id);
+        [HttpDelete("{id}/Votes")]
+        public ActionResult ResetVotesByRoom(string id)
+        {
+            _userService.ResetVoteAsync(id);
+            return Ok();
+        }
 
-        [HttpPost("[action]")]
-        public void UserVote([FromBody] UserVote userVote) => _userService.AddVote(userVote);
+        [HttpPost("{id}/Votes")]
+        public ActionResult UserVote([FromRoute] string id, [FromBody] int vote)
+        {
+            _userService.AddVoteAsync(id, vote);
+            return Ok();
+        }
 
-        [HttpPost("{id}/Roles")]
-        public IEnumerable<string> GetRolesList([FromBody] string[] users, string id) => _userService.GetRoles(users, id);
     }
 }

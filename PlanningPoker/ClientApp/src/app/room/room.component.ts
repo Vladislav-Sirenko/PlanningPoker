@@ -1,8 +1,10 @@
-import { Component, OnInit, Inject, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Inject, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { Cards } from '../cardMock';
 import { UserService } from '../user.service';
 import { UserVote } from '../userVote.model';
 import { ActivatedRoute, Router } from '@angular/router';
+import { User } from '../user.model';
+import { ToastService } from '../toast/toast.service';
 @Component({
   selector: 'app-room',
   templateUrl: './room.component.html',
@@ -15,142 +17,129 @@ export class RoomComponent implements OnInit {
   name: string;
   cards = Cards;
   votesCount: 0;
-  userVote: UserVote[] = [];
   Votes: string[] = [];
   role: string;
-  public users: string[] = [];
+  users: User[] = [];
   id: string;
   roles: string[] = [];
+  creatorName: string;
+  sessionEnded = false;
+  @HostListener('window:beforeunload') goToPage() {
+    this.userService.deleteUserFromRoom();
+    sessionStorage.setItem('Unload', '1');
+  }
   ngOnInit(): void {
+
+    sessionStorage.removeItem('UserVote');
+    if (sessionStorage.getItem('Unload')) {
+      this.router.navigate(['']);
+      sessionStorage.removeItem('Unload');
+    }
+    if (sessionStorage.getItem('UserName').toLowerCase() === this.creatorName.toLowerCase()) {
+      this.role = 'Admin';
+    } else { this.role = 'Guest'; }
     this.votesCount = 0;
-    this.userService.getRoles(this.id);
-    this.userService.roles.subscribe((role) => {
-      this.role = role;
-    });
-    this.userService.getUsers(this.id).subscribe(users => {
-      this.users = [];
-      // tslint:disable-next-line:forin
-      for (const user in users) {
-        this.users.push(users[user]);
-      }
-      this.userService.getRolesForRoom(this.users, this.id).subscribe((roles) => {
-        for (const role in roles) {
-          if (role) {
-            this.roles.push(roles[role]);
-          }
-        }
-      });
-    });
-    this.userService.finishVoting
-      .subscribe(() => {
-        this.userService.getUserVote(this.id).subscribe(result => {
-          this.userVote = [];
-          for (const user in result) {
-            if (user) {
-              const index = this.users.indexOf(user);
-              this.userVote[index] = result[user];
-            }
-          }
-        }, error => console.error(error));
-        console.log(this.userVote);
-      });
-    this.userService.cleared
-      .subscribe(
-        () => {
-          this.Votes = [];
-          this.userVote = [];
-          this.votesCount = 0;
-          localStorage.removeItem('UserVote');
-          this.users = [];
-          this.userService.getUsers(this.id).subscribe(users => {
-            this.users = [];
-            // tslint:disable-next-line:forin
-            for (const user in users) {
-              this.users.push(users[user]);
-            }
-          });
-        });
     this.userService.join
       .subscribe(
-        () => {
+        (roomState: boolean) => {
+          this.sessionEnded = roomState;
           this.userService.getUsers(this.id).subscribe(users => {
-            this.users = [];
-            // tslint:disable-next-line:forin
-            for (const user in users) {
-              this.users.push(users[user]);
-            }
-            this.userService.getRolesForRoom(this.users, this.id).subscribe((roles) => {
-              this.roles = [];
-              for (const role in roles) {
-                if (role) {
-                  this.roles.push(roles[role]);
-                }
+            this.users = users;
+            for (const user of this.users) {
+              this.roles[this.users.indexOf(user)] = 'Guest';
+              if (user.vote) {
+                this.Votes[this.users.indexOf(user)] = '✔';
+              } else { this.Votes[this.users.indexOf(user)] = ''; }
+              if (user.name.toLowerCase() === this.creatorName.toLowerCase()) {
+                this.roles[this.users.indexOf(user)] = 'Admin';
               }
-            });
+            }
+            if (sessionStorage.getItem('UserName').toLowerCase() === this.creatorName.toLowerCase()) {
+              this.userService.notifyAdminRole();
+            }
+          }, err => {
+            this.toaster.error('Something went wrong ' + err);
           });
+        });
+    this.userService.adminJoined.subscribe(name => {
+      this.toaster.success(name + ' joined room as Admin');
+      const user = this.users.find(x => x.name.toLowerCase() === name.toLowerCase());
+      const index = this.users.indexOf(user);
+      this.roles[index] = ' Admin';
+    });
+    this.userService.voted.subscribe((name) => {
+      const user = this.users.find(x => x.name.toLowerCase() === name.toLowerCase());
+      this.Votes[this.users.indexOf(user)] = '✔';
+    });
+    this.userService.finishVoting
+      .subscribe(result => {
+        this.toaster.success(' Voting Finished');
+        this.sessionEnded = true;
+        for (const name in result) {
+          if (name) {
+            const user = this.users.find(x => x.name.toLowerCase() === name.toLowerCase());
+            if (user) {
+              user.vote = result[name];
+            }
+          }
+        }
+      },
+        err => {
+          this.toaster.error('Something went wrong ' + err);
         });
     this.userService.disconnected
       .subscribe(
         (name) => {
-          this.userService.getUsers(this.id).subscribe(users => {
-            this.userVote[this.users.indexOf(name)] = null;
-            this.Votes[this.users.indexOf(name)] = null;
-            this.users = [];
-            // tslint:disable-next-line:forin
-            for (const user in users) {
-              this.users.push(users[user]);
-            }
-            this.userService.getRolesForRoom(this.users, this.id).subscribe((roles) => {
-              this.roles = [];
-              for (const role in roles) {
-                if (role) {
-                  this.roles.push(roles[role]);
-                }
-              }
-            });
-          });
+          const user = this.users.find(x => x.name.toLowerCase() === name.toLowerCase());
+          const index = this.users.indexOf(user);
+          if (this.users.includes(user)) {
+            this.roles.splice(index, 1);
+            this.Votes.splice(index, 1);
+            this.users.splice(index, 1);
+          }
         });
-    this.userService.voted.subscribe((name) => {
-      this.userService.getUsers(this.id).subscribe(users => {
-        this.users = [];
-        this.votesCount++;
-        // tslint:disable-next-line:forin
-        for (const user in users) {
-          this.users.push(users[user]);
-        }
-      });
-      const index = this.users.indexOf(name.split(' ')[0]);
-      // tslint:disable-next-line:forin
-      for (const user in this.users) {
-        if (this.users[user] === name.split(' ')[0]) {
-          this.Votes[index] = '✔';
-        } else {
-          this.Votes[user] === '✔' ? this.Votes[user] = '✔' :
-            this.Votes[user] = 'No';
-        }
-      }
+    this.userService.cleared
+      .subscribe(
+        () => {
+          this.toaster.success(' Voting reseted');
+          this.Votes = [];
+          this.votesCount = 0;
+          this.sessionEnded = false;
+          sessionStorage.removeItem('UserVote');
+        });
+    this.userService.roomDeleted.subscribe(() => {
+      sessionStorage.removeItem('UserVote');
+      this.router.navigate(['']);
     });
+  }
+
+  isAdmin(): boolean {
+    return this.role === 'Admin';
   }
 
 
   onChanged(number: number) {
-    const userName = localStorage.getItem('UserName');
-    localStorage.setItem('UserVote', number.toString());
-    this.userService.addUserVote(userName, number);
+    sessionStorage.setItem('UserVote', number.toString());
+    this.userService.addUserVote(number);
   }
 
   getVotes() {
-    this.userService.finishVote();
+    this.userService.getUserVote(this.id).subscribe();
   }
 
   resetVotes() {
-    localStorage.removeItem('UserVote');
+    sessionStorage.removeItem('UserVote');
+    for (const user of this.users) {
+      user.vote = null;
+    }
     this.userService.resetUserVotes(this.id);
   }
 
   logOut() {
-    const userName = localStorage.getItem('UserName');
-    this.userService.deleteUser(userName);
+    sessionStorage.removeItem('UserVote');
+    this.userService.deleteUserFromRoom();
+    this.users = [];
+    this.roles = [];
     this.router.navigate(['']);
   }
 
@@ -160,18 +149,15 @@ export class RoomComponent implements OnInit {
     }
     return false;
   }
+  showVote(user: User) {
+    return this.sessionEnded === true ? user.vote : '';
+  }
 
-  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute) {
+  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private toaster: ToastService) {
     this.route.queryParams.subscribe(params => {
       this.name = params['name'];
       this.id = params['id'];
-    });
-
-    this.userService.getUsers(this.id).subscribe(users => {
-      // tslint:disable-next-line:forin
-      for (const user in users) {
-        this.users.push(users[user]);
-      }
+      this.creatorName = params['creatorName'];
     });
   }
 }

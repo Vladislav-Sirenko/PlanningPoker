@@ -18,17 +18,22 @@ export class CardComponent implements OnInit {
 
   getHeaderClass() {
 
-    return localStorage.getItem('UserVote') === this.value.toString() ? 'card border-success  mb-3 bg-success' :
+    return this.checkUserVote() ? 'card border-success  mb-3 bg-success' :
       'card border-success  mb-3 ';
   }
   getBodyClass() {
 
-    return localStorage.getItem('UserVote') === this.value.toString() ? 'card-body bg-success' : 'card-body ';
+    return this.checkUserVote() ? 'card-body bg-success' : 'card-body ';
+  }
+  checkUserVote(): boolean {
+    if (this.value) {
+      return sessionStorage.getItem('UserVote') === this.value.toString();
+    }
+    return false;
   }
 
-
   public sendMessage() {
-    if (!localStorage.getItem('UserVote')) {
+    if (!sessionStorage.getItem('UserVote')) {
       this.onChanged.emit(this.value);
     }
   }

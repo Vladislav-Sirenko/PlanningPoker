@@ -1,0 +1,24 @@
+2019-05-01T20:30:59.2654069+03:00 [INF]  Microsoft.AspNetCore.SpaServices Starting @angular/cli on port 51361...
+[{}]
+2019-05-01T20:31:07.5500272+03:00 [INF]  Microsoft.AspNetCore.SpaServices > PlanningPoker@0.0.0 start C:\Users\Vladyslav_Sirenko2\Desktop\Poker\PlanningPoker\ClientApp
+> ng serve --extract-css "--port" "51361"
+
+** NG Live Development Server is listening on localhost:51361, open your browser on http://localhost:51361/ **
+
+[{}]
+2019-05-01T20:31:19.9386461+03:00 [INF]  Microsoft.AspNetCore.SpaServices Date: 2019-05-01T17:31:19.936Z
+
+[{}]
+2019-05-01T20:31:19.9680102+03:00 [INF]  Microsoft.AspNetCore.SpaServices Hash: 4fae140f14fc2de80fef
+Time: 12335ms
+chunk {inline} inline.bundle.js (inline) 3.85 kB [entry] [rendered]
+chunk {main} main.bundle.js (main) 146 kB [initial] [rendered]
+chunk {polyfills} polyfills.bundle.js (polyfills) 549 kB [initial] [rendered]
+chunk {styles} styles.bundle.css (styles) 119 kB [initial] [rendered]
+chunk {vendor} vendor.bundle.js (vendor) 9.83 MB [initial] [rendered]
+
+
+[{}]
+2019-05-01T20:31:19.9709587+03:00 [INF]  Microsoft.AspNetCore.SpaServices webpack: Compiled successfully.
+
+[{}]

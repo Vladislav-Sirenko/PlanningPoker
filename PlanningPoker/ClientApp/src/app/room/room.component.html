@@ -1,66 +1,66 @@
+<div class="container border bg-dark mt-0 text-light" style="height:auto;min-height:500px;border-radius:5px;box-shadow: inset 0 0 8px rgb(169, 170, 105);">
+    <div class="row mt-2">
+        <div class="col-9 ">
 
-<div class= "text-right">
-  <button (click)="logOut()" class="btn btn-primary mt-2">Log out</button>
-</div>
-
-<div class="container ">
-  <div class="row justify-content-center">
-    <h2 class="col-4 text-center" >{{name}}</h2>
-    
-  </div>
-  <div class="row align-content-center">
-    <div class="col m-2 ">
-      <app-message [userName]="userName" id="message"></app-message>
+        </div>
+        <button (click)="logOut()" class="col-2 btn btn-warning ">Log out</button>
     </div>
+    <div class="row justify-content-center">
+        <h2 class="col-4 text-center">{{name}}</h2>
 
-
-    <div class="col-md-5 m-2 ">
-      <div *ngFor="let card of cards; let idx = index">
-        <app-card (onChanged)="onChanged($event)" [value]="card.value" id="message"></app-card>
-      </div>
     </div>
-
-    <div class="col-4  border" id="messagebox">
-        <button *ngIf="role === 'Admin'" [disabled] = "buttonDisabled()" (click)="getVotes()" class="btn btn-primary mt-2">Finish Voting</button>
-        <button *ngIf="role === 'Admin'" (click)="resetVotes()" class="btn btn-primary mt-2">Reset Votes</button>
-      <div class="row border bg-primary">
-        <div class="col">
-          <p>Active users</p>
+    <div class="row align-content-center">
+        <div class="col-lg-2 m-2 ">
+            <app-message [userName]="userName" id="message"></app-message>
         </div>
 
-        <div class="col">
-          <p>Role</p>
-        </div>
 
-        <div class="col">
-          <p>Voted Users</p>
-        </div>
-
-        <div class="col">
-          <p>Vote</p>
-        </div>
-
-      </div>
-
-      <div class="row border bg-primary ">
-          <div class="col-3">
-              <p *ngFor="let user of users" class="text-dark">{{user}}</p>
+        <div class="col-lg-4 m-2 text-dark">
+            <div *ngFor="let card of cards; let idx = index">
+                <app-card (onChanged)="onChanged($event)" [value]="card.value" id="message"></app-card>
             </div>
-        <div class="col">
-            <p *ngFor="let role of roles " class="text-dark ">{{role}}</p>
-          </div>
-        <div class="col"></div>
-        <div class="col-4">
-          <p *ngFor="let vot of Votes" class="text-dark">{{vot}}<br></p>
         </div>
-        <div class="col"></div>
-        <div class="col-2  ">
-          <p *ngFor="let vote of userVote " class="text-dark ">{{vote}}</p>
-        </div>
-      </div>
 
+        <div class="col-lg-4 col-sm-4 ml-2 border" id="messagebox">
+            <button *ngIf="isAdmin()" (click)="getVotes()" class="btn btn-primary mt-2">Finish Voting</button>
+            <button *ngIf="isAdmin()" (click)="resetVotes()" class="btn btn-primary mt-2">Reset Votes</button>
+            <div class="row border bg-primary">
+                <div class="col-sm-3">
+                    <p>Active users</p>
+                </div>
+
+                <div class="col-sm-2">
+                    <p>Role</p>
+                </div>
+
+                <div class="col-sm-4">
+                    <p>Voted Users</p>
+                </div>
+
+                <div class="col-sm-2">
+                    <p>Vote</p>
+                </div>
+
+            </div>
+
+            <div class="row border bg-primary ">
+                <div class="col-sm-3" align="center">
+                    <p *ngFor="let user of users" class="text-dark">{{user.name}}</p>
+                </div>
+                <div class="col-sm-2">
+                    <p *ngFor="let role of roles" class="text-dark ">{{role}}</p>
+                </div>
+                <div class="col-sm-1"></div>
+                <div class="col-sm-1">
+                    <p *ngFor="let vot of Votes" class="text-dark justify-content-center">{{vot}}<br></p>
+                </div>
+                <div class="col-sm-2"></div>
+                <div class="col-sm-1">
+                    <p *ngFor="let user of users" class="text-dark ">{{showVote(user)}}<br></p>
+                </div>
+            </div>
+
+        </div>
     </div>
-
-  </div>
 
 </div>
